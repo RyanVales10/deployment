@@ -22,24 +22,23 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect('/admin');
-    })->name('dashboard');
+// Public admin login page (shows login form at /admin)
+Route::get('/admin', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('admin.login');
 
-    // Admin routes
-    Route::get('/admin', [AdminController::class, 'index']);
-    Route::get('/admin/responses', [AdminController::class, 'responses']);
-    Route::get('/admin/responses/{id}/details', [AdminController::class, 'responseDetails']);
-    Route::get('/admin/export-csv', [AdminController::class, 'exportCsv']);
+// Protected admin routes (require admin middleware)
+Route::middleware('admin')->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/responses', [AdminController::class, 'responses']);
+    Route::get('/responses/{id}/details', [AdminController::class, 'responseDetails']);
+    Route::get('/export-csv', [AdminController::class, 'exportCsv']);
 
     // Admin API (categories / questions CRUD)
-    Route::get('/admin/api/categories', [AdminController::class, 'categoriesJson']);
-    Route::post('/admin/api/categories', [AdminController::class, 'storeCategory']);
-    Route::put('/admin/api/categories/{id}', [AdminController::class, 'updateCategory']);
-    Route::delete('/admin/api/categories/{id}', [AdminController::class, 'deleteCategory']);
-    Route::post('/admin/api/questions', [AdminController::class, 'storeQuestion']);
-    Route::post('/admin/api/questions/reorder', [AdminController::class, 'reorderQuestions']);
-    Route::put('/admin/api/questions/{id}', [AdminController::class, 'updateQuestion']);
-    Route::delete('/admin/api/questions/{id}', [AdminController::class, 'deleteQuestion']);
+    Route::get('/api/categories', [AdminController::class, 'categoriesJson']);
+    Route::post('/api/categories', [AdminController::class, 'storeCategory']);
+    Route::put('/api/categories/{id}', [AdminController::class, 'updateCategory']);
+    Route::delete('/api/categories/{id}', [AdminController::class, 'deleteCategory']);
+    Route::post('/api/questions', [AdminController::class, 'storeQuestion']);
+    Route::post('/api/questions/reorder', [AdminController::class, 'reorderQuestions']);
+    Route::put('/api/questions/{id}', [AdminController::class, 'updateQuestion']);
+    Route::delete('/api/questions/{id}', [AdminController::class, 'deleteQuestion']);
 });
