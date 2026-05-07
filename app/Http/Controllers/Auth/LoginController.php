@@ -10,7 +10,7 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return redirect('/')->with('show_login_modal', true);
+        return view('admin.login');
     }
 
     public function login(Request $request)
