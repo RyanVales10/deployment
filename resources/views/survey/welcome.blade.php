@@ -1,518 +1,1292 @@
 @extends('layouts.app')
 
-@section('title', 'ADDU Alumni Tracer Study')
+@section('title', 'ADDU Graduate Tracer Study')
 
 @section('content')
 <style>
-    @import url('https://fonts.bunny.net/css?family=montserrat:500,600,700,800|source-sans-3:400,600,700');
+    @import url('https://fonts.bunny.net/css?family=cinzel:700,800|nunito-sans:300,400,500,600,700,800');
 
-    .welcome-page {
-        --addu-blue: #003a8c;
-        --addu-blue-deep: #002a63;
-        --addu-blue-bright: #0b58c4;
-        --addu-gold: #f5b800;
-        --addu-gold-deep: #dca000;
-        --addu-red: #9e1b32;
-        --addu-ink: #11243f;
-        --addu-muted: #4d607b;
-        position: relative;
-        font-family: 'Source Sans 3', sans-serif;
-        background:
-            radial-gradient(circle at top right, rgba(11, 88, 196, 0.12), transparent 28%),
-            radial-gradient(circle at bottom left, rgba(245, 184, 0, 0.16), transparent 24%),
-            linear-gradient(180deg, #f4f7fc 0%, #eef3fb 45%, #ffffff 100%);
+    :root {
+        --blue:     #1a24d2;
+        --blue-d:   #0d1496;
+        --blue-dd:  #09107a;
+        --gold:     #c9a227;
+        --gold-bright: #f5b800;
+        --ink:      #0d1b3e;
+        --muted:    #5a6a88;
+        --bg:       #f0f2f9;
     }
 
-    .welcome-page .title-font {
-        font-family: 'Montserrat', sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Nunito Sans', -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
     }
 
-    .welcome-page .page-shell {
-        position: relative;
-        overflow: hidden;
-        isolation: isolate;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(247, 250, 255, 0.98) 100%);
-        box-shadow: 0 24px 50px rgba(0, 42, 99, 0.14);
+    .cinzel { font-family: 'Cinzel', 'Times New Roman', serif; }
+
+    /* ── Tribal pattern background ── */
+    .blue-pattern {
+        background-color: var(--blue-dd);
+        background-image:
+            url('/images/pattern.png'),
+            linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
+        background-repeat: repeat, no-repeat;
+        background-size: 420px auto, cover;
+        background-blend-mode: overlay, normal;
     }
 
-    .welcome-page .hero-panel {
-        background: linear-gradient(135deg, #00244f 0%, var(--addu-blue) 52%, var(--addu-blue-bright) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-bottom-left-radius: 1.25rem;
-        border-bottom-right-radius: 1.25rem;
-        box-shadow: 0 24px 48px rgba(0, 42, 99, 0.28);
+    /* Fallback if pattern.png not found — still looks good */
+    .blue-pattern-fallback {
+        background: linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
     }
 
-    .welcome-page .hero-glow-a,
-    .welcome-page .hero-glow-b {
+    /* ── Navbar ── */
+    .navbar {
+        background: var(--blue-dd);
+        height: 58px;
+        padding: 0 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 2px 18px rgba(0,0,0,0.25);
+    }
+
+    /* Gold gradient bar — fades out on scroll */
+    .navbar::after {
+        content: '';
         position: absolute;
-        border-radius: 9999px;
-        filter: blur(46px);
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            var(--gold-bright) 18%,
+            var(--gold-bright) 82%,
+            transparent 100%);
+        opacity: 1;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        transform-origin: top;
         pointer-events: none;
     }
 
-    .welcome-page .hero-glow-a {
-        width: 260px;
-        height: 260px;
-        right: -50px;
-        top: -50px;
-        background: rgba(245, 184, 0, 0.24);
+    .navbar.scrolled::after {
+        opacity: 0;
+        transform: scaleY(0);
     }
 
-    .welcome-page .hero-glow-b {
-        width: 230px;
-        height: 230px;
-        left: -60px;
-        bottom: -60px;
-        background: rgba(158, 27, 50, 0.16);
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        text-decoration: none;
+        flex-shrink: 0;
     }
 
-    .welcome-page .badge {
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.24);
+    .navbar-seal {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: contain;
+    }
+
+    .navbar-brand-title {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
         color: #fff;
+        line-height: 1.3;
     }
 
-    .welcome-page .time-chip {
-        background: linear-gradient(90deg, var(--addu-gold) 0%, var(--addu-gold-deep) 100%);
-        color: #172741;
+    .navbar-brand-sub {
+        display: block;
+        font-size: 0.58rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.52);
+        line-height: 1.3;
     }
 
-    .welcome-page .action-card {
-        background: #ffffff;
-        border: 1px solid #d8e3f7;
-        box-shadow: 0 16px 36px rgba(17, 36, 63, 0.14);
-        border-radius: 1.25rem;
-        align-self: start;
-        max-width: 460px;
+    .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+        list-style: none;
     }
 
-    .welcome-page .start-btn {
-        background: linear-gradient(90deg, var(--addu-blue) 0%, var(--addu-blue-deep) 100%);
+    .navbar-links a {
+        display: block;
+        padding: 0.45rem 0.9rem;
+        padding-bottom: calc(0.45rem - 2px);
+        border-bottom: 2px solid transparent;
+        color: rgba(255,255,255,0.72);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+        transition: color 0.2s, border-color 0.2s;
+    }
+
+    .navbar-links a:hover {
         color: #fff;
+        border-bottom-color: rgba(245,184,0,0.55);
     }
 
-    .welcome-page .start-btn:hover {
-        background: linear-gradient(90deg, var(--addu-blue-deep) 0%, #001e48 100%);
+    .navbar-links a.active {
+        color: #fff;
+        border-bottom-color: var(--gold-bright);
     }
 
-    .welcome-page .info-card {
-        background: #fff;
-        border: 1px solid #dbe5f6;
-        border-radius: 16px;
-        box-shadow: 0 10px 24px rgba(17, 36, 63, 0.08);
-        padding: 1.25rem;
-        min-height: 100%;
-    }
-
-    .welcome-page .info-card .eyebrow {
+    .navbar-login {
         display: inline-flex;
         align-items: center;
+        padding: 0.4rem 1.1rem;
+        border: 1.5px solid rgba(255,255,255,0.5);
+        border-radius: 7px;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: background 0.15s, border-color 0.15s;
+        flex-shrink: 0;
+    }
+
+    .navbar-login:hover {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.8);
+    }
+
+    /* ── Hero ── */
+    .hero {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 5rem 2.5rem 4.5rem;
+        display: grid;
+        grid-template-columns: 1fr 180px;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .hero-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: rgba(255,255,255,0.62);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-eyebrow::before {
+        content: '';
+        display: block;
+        width: 30px;
+        height: 2px;
+        background: var(--gold);
+        flex-shrink: 0;
+    }
+
+    .hero h1 {
+        font-family: 'Cinzel', serif;
+        font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 1.1;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero h1 .gold { color: var(--gold-bright); }
+
+    .hero-desc {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.95rem;
+        line-height: 1.72;
+        max-width: 500px;
+        margin-bottom: 2rem;
+    }
+
+    .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.85rem 1.9rem;
+        background: var(--gold-bright);
+        color: #09107a;
+        font-size: 0.92rem;
+        font-weight: 800;
+        border-radius: 9px;
+        border: none;
+        cursor: pointer;
+        letter-spacing: 0.01em;
+        transition: background 0.15s, transform 0.12s;
+        text-decoration: none;
+    }
+
+    .hero-cta:hover {
+        background: #e5ab00;
+        transform: translateY(-1px);
+    }
+
+    .hero-seal-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .hero-seal {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+    }
+
+    /* ── Info Section ── */
+    .info-section {
+        background: linear-gradient(180deg,
+            #d8e0f2 0%,
+            #e8edf8 15%,
+            #edf1fa 50%,
+            #e8edf8 85%,
+            #dde4f2 100%);
+    }
+
+    .section-wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 2.75rem 2.5rem;
+    }
+
+    .section-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+    }
+
+    .section-eyebrow::before {
+        content: '—';
+        color: var(--gold);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    /* About card: blue top + white bottom */
+    .about-card {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(9,16,122,0.18);
+    }
+
+    .about-card-top {
+        padding: 1.5rem 1.75rem 1.4rem;
+    }
+
+    .about-card-top .card-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold-bright);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .about-card-top .card-label::before { content: '—'; }
+
+    .about-card-top h3 {
+        font-family: 'Cinzel', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #fff;
+        text-transform: uppercase;
+        margin-bottom: 0.65rem;
+    }
+
+    .about-card-top p {
+        font-size: 0.84rem;
+        line-height: 1.65;
+        color: rgba(255,255,255,0.72);
+    }
+
+    .about-card-bottom {
+        background: #fff;
+        padding: 0 1.75rem;
+    }
+
+    .meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid #eaecf4;
+        gap: 1rem;
+    }
+
+    .meta-row:last-child { border-bottom: none; }
+
+    .meta-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .meta-value {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--ink);
+        text-align: right;
+    }
+
+    /* Time commitment card */
+    .time-card {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(9,16,122,0.18);
+    }
+
+    .time-card-top {
+        padding: 1.5rem 1.75rem 1.25rem;
+    }
+
+    .time-card-top .card-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold-bright);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .time-card-top .card-label::before { content: '—'; }
+
+    .time-number {
+        display: flex;
+        align-items: baseline;
         gap: 0.4rem;
-        border-radius: 9999px;
-        padding: 0.3rem 0.65rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .time-big {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    .time-unit {
+        font-size: 1rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.75);
+        line-height: 1;
+    }
+
+    .time-subunit {
         font-size: 0.72rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.55);
+        display: block;
+    }
+
+    .time-caption {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.65);
+        margin-bottom: 0;
+    }
+
+    .time-card-bottom {
+        background: rgba(255,255,255,0.07);
+        padding: 0.85rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .time-item {
+        background: rgba(255,255,255,0.9);
+        border-radius: 9px;
+        padding: 0.65rem 0.85rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+    }
+
+    .time-item-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1.5px solid #d0d9ee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .time-item-icon svg {
+        width: 13px;
+        height: 13px;
+        color: var(--blue-dd);
+    }
+
+    .time-item-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--ink);
+        display: block;
+        margin-bottom: 0.15rem;
+    }
+
+    .time-item-desc {
+        font-size: 0.74rem;
+        line-height: 1.45;
+        color: var(--muted);
+    }
+
+    /* ── What to Expect ── */
+    .expect-section {
+        background: linear-gradient(180deg,
+            #e4eaf6 0%,
+            #f5f7fd 8%,
+            #ffffff 20%,
+            #ffffff 80%,
+            #f2f5fc 100%);
+    }
+
+    .step-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .step-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1.5px solid transparent;
+        transition: all 0.15s;
+        letter-spacing: 0.01em;
+    }
+
+    .step-tab svg { width: 14px; height: 14px; }
+
+    .step-tab.active {
+        background: var(--blue-dd);
+        color: #fff;
+        border-color: var(--blue-dd);
+    }
+
+    .step-tab.inactive {
+        background: #fff;
+        color: var(--muted);
+        border-color: #d0daea;
+    }
+
+    .step-tab.inactive:hover {
+        border-color: var(--blue-dd);
+        color: var(--blue-dd);
+    }
+
+    .step-preview-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .step-nav-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1.5px solid #cdd7ee;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+
+    .step-nav-btn:hover {
+        border-color: var(--blue-dd);
+        background: #edf2ff;
+    }
+
+    .step-nav-btn svg {
+        width: 14px;
+        height: 14px;
+        color: var(--muted);
+    }
+
+    .step-preview-card {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #dce4f4;
+        border-radius: 14px;
+        padding: 1.75rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 4px 18px rgba(9,16,122,0.07);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .step-preview-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #edf2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .step-preview-icon svg {
+        width: 20px;
+        height: 20px;
+        color: var(--blue-dd);
+    }
+
+    .step-preview-content { flex: 1; min-width: 0; }
+
+    .step-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+
+    .step-title {
+        font-family: 'Cinzel', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
+    }
+
+    .step-desc {
+        font-size: 0.82rem;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    .step-big-number {
+        font-family: 'Cinzel', serif;
+        font-size: 6rem;
+        font-weight: 800;
+        color: rgba(26,36,210,0.06);
+        line-height: 1;
+        flex-shrink: 0;
+        user-select: none;
+        letter-spacing: -0.02em;
+    }
+
+    .step-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.45rem;
+        margin-top: 1.1rem;
+    }
+
+    .step-dot {
+        height: 7px;
+        border-radius: 4px;
+        background: #cdd7ee;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        padding: 0;
+        width: 7px;
+    }
+
+    .step-dot.active {
+        background: var(--blue-dd);
+        width: 22px;
+    }
+
+    /* ── FAQs ── */
+    .faq-section {
+        background: linear-gradient(180deg,
+            #eaeff9 0%,
+            #f0f3fb 15%,
+            #f0f3fb 85%,
+            #e5ebf5 100%);
+    }
+
+    .faq-section-title {
+        font-family: 'Cinzel', serif;
+        font-size: 1.65rem;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: 0.03em;
+        margin-top: 0.3rem;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .faq-card {
+        background: #fff;
+        border: 1px solid #dce4f4;
+        border-radius: 12px;
+        padding: 1.15rem 1.35rem;
+        transition: border-color 0.15s;
+    }
+
+    .faq-card:hover { border-color: #b8c8e8; }
+
+    .faq-q {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.45rem;
+    }
+
+    .faq-bullet {
+        color: var(--gold);
+        font-size: 0.9rem;
+        margin-top: 0.05rem;
+        flex-shrink: 0;
+    }
+
+    .faq-a {
+        font-size: 0.8rem;
+        line-height: 1.65;
+        color: var(--muted);
+    }
+
+    /* ── Footer ── */
+    .footer-contact {
+        text-align: center;
+        padding: 1.1rem 2rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+        background: linear-gradient(180deg, #e0e7f4 0%, #d5ddf0 100%);
+    }
+
+    .footer-bar {
+        background: var(--blue-dd);
+        padding: 1rem 2.5rem;
+    }
+
+    .footer-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .footer-seal {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: contain;
+        opacity: 0.9;
+    }
+
+    .footer-brand-title {
+        display: block;
+        font-size: 0.7rem;
         font-weight: 800;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--addu-blue);
-        background: #edf3ff;
-    }
-
-    .welcome-page .privacy-panel {
-        border: 1px solid #c6d7f4;
-        background: linear-gradient(90deg, #eef4ff 0%, #fff7dc 100%);
-    }
-
-    .welcome-page .content-panel {
-        background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
-        border-top: 1px solid rgba(214, 225, 243, 0.8);
-    }
-
-    .welcome-page .content-surface {
-        background: rgba(255, 255, 255, 0.88);
-        border: 1px solid #dbe5f6;
-        border-radius: 1.5rem;
-        box-shadow: 0 12px 26px rgba(17, 36, 63, 0.06);
-    }
-
-    .welcome-page .text-main {
-        color: var(--addu-ink);
-    }
-
-    .welcome-page .text-muted {
-        color: var(--addu-muted);
-    }
-
-    .welcome-page .timeline-shell {
-        border: 1px solid #d6e1f3;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 10px 22px rgba(17, 36, 63, 0.08);
-        padding: 1.1rem;
-    }
-
-    .welcome-page .timeline-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-
-    .welcome-page .timeline-step {
-        border: 1px solid #e1e8f4;
-        border-radius: 12px;
-        background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
-        padding: 0.9rem;
-    }
-
-    .welcome-page .step-dot {
-        width: 1.85rem;
-        height: 1.85rem;
-        border-radius: 9999px;
-        background: var(--addu-blue);
         color: #fff;
-        font-size: 0.85rem;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        line-height: 1.3;
     }
 
-    .welcome-page .faq-shell {
-        border: 1px solid #d6e1f3;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 10px 22px rgba(17, 36, 63, 0.08);
-        padding: 1.1rem;
+    .footer-brand-sub {
+        display: block;
+        font-size: 0.6rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        line-height: 1.3;
     }
 
-    .welcome-page .faq-item {
-        border: 1px solid #e3e9f5;
-        border-radius: 12px;
-        background: #fbfcff;
-        padding: 0.7rem 0.9rem;
+    .footer-copy {
+        font-size: 0.73rem;
+        color: rgba(255,255,255,0.45);
     }
 
-    .welcome-page .faq-item + .faq-item {
-        margin-top: 0.65rem;
-    }
-
-    .welcome-page .faq-item summary {
-        cursor: pointer;
-        list-style: none;
-        font-weight: 700;
-        color: var(--addu-ink);
-    }
-
-    .welcome-page .faq-item summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .welcome-page .faq-item p {
-        margin-top: 0.45rem;
-        color: var(--addu-muted);
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-
-    @media (min-width: 768px) {
-        .welcome-page .timeline-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .welcome-page .intro-grid {
-            grid-template-columns: 1.3fr 0.9fr;
-        }
-    }
-
-    .welcome-page .hero-logo {
-        position: absolute;
-        right: 1.5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 160px;
-        height: auto;
-    }
-
-    @media (max-width: 640px) {
-        .welcome-page .hero-logo { display: none; }
-    }
-
-    .welcome-page .modal-backdrop {
+    /* ── Modal ── */
+    .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(8, 20, 43, 0.72);
+        background: rgba(7,14,46,0.75);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        z-index: 50;
+        z-index: 100;
     }
 
-    .welcome-page .modal-backdrop[hidden] {
-        display: none;
-    }
-
-    .welcome-page .consent-modal {
-        width: min(100%, 38rem);
-        border-radius: 1.5rem;
+    .modal-box {
         background: #fff;
-        box-shadow: 0 32px 80px rgba(0, 0, 0, 0.28);
-        border: 1px solid #dbe5f6;
+        border-radius: 16px;
+        width: min(100%, 560px);
+        max-height: 92vh;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.3);
     }
 
-    .welcome-page .consent-modal-header {
-        background: linear-gradient(135deg, var(--addu-blue) 0%, var(--addu-blue-deep) 100%);
+    .modal-header {
+        background: var(--blue-dd);
         color: #fff;
-        padding: 1.2rem 1.4rem;
+        padding: 1.1rem 1.35rem;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.85rem;
+        flex-shrink: 0;
     }
 
-    .welcome-page .consent-modal-body {
-        padding: 1.35rem 1.4rem 1rem;
-        color: var(--addu-ink);
+    .modal-hd-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
     }
 
-    .welcome-page .consent-modal-footer {
-        padding: 0 1.4rem 1.4rem;
+    .modal-hd-icon svg { width: 15px; height: 15px; color: rgba(255,255,255,0.9); }
+
+    .modal-hd-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 0.15rem;
     }
 
-    .welcome-page .consent-copy {
-        border: 1px solid #dbe5f6;
-        border-radius: 1rem;
-        background: #f8fbff;
-        padding: 1rem;
+    .modal-hd-sub {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.58);
     }
 
-    .welcome-page .modal-close {
-        color: rgba(255, 255, 255, 0.9);
+    .modal-close-btn {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        font-size: 1.35rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+        flex-shrink: 0;
     }
+
+    .modal-close-btn:hover { color: #fff; }
+
+    .modal-body {
+        overflow-y: auto;
+        padding: 1.3rem 1.4rem 0.9rem;
+        font-size: 0.83rem;
+        line-height: 1.7;
+        color: var(--ink);
+        flex: 1;
+    }
+
+    .modal-body p { margin-bottom: 0.75rem; }
+    .modal-body p:last-child { margin-bottom: 0; }
+
+    .modal-stitle {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-top: 0.9rem;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+
+    .modal-footer {
+        padding: 0.9rem 1.4rem 1.2rem;
+        border-top: 1px solid #e8edf6;
+        flex-shrink: 0;
+    }
+
+    .consent-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        font-size: 0.8rem;
+        color: var(--ink);
+        cursor: pointer;
+        margin-bottom: 0.9rem;
+        line-height: 1.55;
+    }
+
+    .consent-label input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        margin-top: 2px;
+        accent-color: var(--blue-dd);
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 0.7rem;
+    }
+
+    .btn-cancel {
+        padding: 0.65rem 1.2rem;
+        border: 1.5px solid #cdd7ee;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        font-size: 0.83rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Nunito Sans', sans-serif;
+        transition: all 0.15s;
+    }
+
+    .btn-cancel:hover { border-color: #8ea4cc; color: var(--ink); }
+
+    .btn-proceed {
+        flex: 1;
+        padding: 0.65rem 1.2rem;
+        border-radius: 8px;
+        border: none;
+        background: var(--blue-dd);
+        color: #fff;
+        font-size: 0.83rem;
+        font-weight: 700;
+        font-family: 'Nunito Sans', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn-proceed:hover { background: var(--blue-d); }
+    .btn-proceed.disabled { opacity: 0.38; pointer-events: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+        .info-grid { grid-template-columns: 1fr; }
+        .faq-grid  { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+        .navbar-links { display: none; }
+        .hero-inner { grid-template-columns: 1fr; }
+        .hero-seal-wrap { display: none; }
+        .step-big-number { display: none; }
+    }
+
+    [x-cloak] { display: none !important; }
 </style>
 
-<div class="welcome-page min-h-screen px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-    <div class="page-shell mx-auto max-w-4xl rounded-[2rem]">
-    <section class="relative overflow-hidden rounded-[1.75rem] hero-panel text-white">
-        <div class="hero-glow-a"></div>
-        <div class="hero-glow-b"></div>
+<div x-data="homeApp()" x-cloak>
 
-        <div class="relative grid gap-7 px-6 py-10 sm:px-10 sm:py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:px-12 lg:py-13">
-            <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="Ateneo de Davao University logo" class="hero-logo">
+    {{-- ── NAVBAR ── --}}
+    <nav class="navbar" :class="scrolled ? 'scrolled' : ''">
+        <a href="/" class="navbar-brand">
+            <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU Seal" class="navbar-seal" onerror="this.style.display='none'">
+            <span>
+                <span class="navbar-brand-title">Ateneo de Davao University</span>
+                <span class="navbar-brand-sub">Alumni Affairs Office</span>
+            </span>
+        </a>
+
+        <ul class="navbar-links">
+            <li><a href="#about" :class="activeSection === 'about' ? 'active' : ''">About</a></li>
+            <li><a href="#time" :class="activeSection === 'time' ? 'active' : ''">Time</a></li>
+            <li><a href="#what-to-expect" :class="activeSection === 'expect' ? 'active' : ''">What to Expect</a></li>
+            <li><a href="#faqs" :class="activeSection === 'faqs' ? 'active' : ''">FAQs</a></li>
+        </ul>
+
+        <a href="{{ url('/admin') }}" class="navbar-login">Log In</a>
+    </nav>
+
+    {{-- ── HERO ── --}}
+    <section id="about" class="hero blue-pattern">
+        <div class="hero-inner">
             <div>
-                <h1 class="title-font mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-                    <span class="block" style="color: #f5b800;">Tracer Study</span>
-                </h1>
-                <div class="mt-6 flex flex-wrap items-center gap-3">
-                    <span class="time-chip inline-flex items-center rounded-full px-4 py-2 text-xs font-bold sm:text-sm">
-                        15-20 minutes to complete
-                    </span>
-                    <span class="badge inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold sm:text-sm">
-                        One raffle entry for an Ateneo Jacket
-                    </span>
-                </div>
-            </div>
-
-            <aside class="action-card rounded-2xl p-5 sm:p-6 self-start">
-                <h2 class="title-font text-xl font-bold text-main sm:text-2xl">Ready to begin?</h2>
-                <p class="mt-2 text-sm leading-relaxed text-muted sm:text-base">
-                   Before starting the survey, please ensure that you have read the Data Privacy Notice and Consent.
+                <div class="hero-eyebrow">Ateneo de Davao University &middot; Alumni Affairs</div>
+                <h1>Graduate<br><span class="gold">Tracer Study</span></h1>
+                <p class="hero-desc">
+                    The tracer study gathers insights on career paths, achievements, and alumni
+                    experiences to improve academic programs and institutional services.
                 </p>
-                <button
-                    type="button"
-                    id="openConsentModal"
-                    class="start-btn mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold transition sm:text-lg"
-                >
-                    Read the Data Privacy Notice and Consent
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
+                <button @click="openModal()" class="hero-cta">
+                    Answer the Survey!
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                 </button>
-                <p class="mt-3 text-center text-xs text-slate-500 sm:text-sm">You can save your progress and resume later.</p>
-            </aside>
+            </div>
+            <div class="hero-seal-wrap">
+                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="Ateneo de Davao University" class="hero-seal" onerror="this.style.display='none'">
+            </div>
         </div>
     </section>
 
-    <div class="modal-backdrop" id="consentModal" hidden aria-hidden="true">
-        <div class="consent-modal" role="dialog" aria-modal="true" aria-labelledby="consentModalTitle">
-            <div class="consent-modal-header flex items-start justify-between gap-4">
-                <div>
-                    <h2 id="consentModalTitle" class="title-font text-2xl font-bold">Data Privacy Notice and Consent</h2>
-                    <p class="mt-1 text-sm text-white/85">Please review the notice before starting the survey.</p>
-                </div>
-                <button type="button" id="closeConsentModal" class="modal-close text-2xl leading-none" aria-label="Close dialog">&times;</button>
-            </div>
-            <div class="consent-modal-body">
-                <div class="consent-copy space-y-3 text-sm leading-relaxed sm:text-base">
-                    <p class="font-semibold uppercase tracking-[0.12em] text-[#003a8c]">Opt-In</p>
-                    <p class="text-xl font-bold text-main">Data Privacy Notice and Consent</p>
-                    <p>
-                        By proceeding with this Alumni Tracer Study Survey, you acknowledge and agree that the information you provide will be collected, processed, stored, and used by the institution in accordance with the provisions of the Philippine Data Privacy Act of 2012 (Republic Act No. 10173).
-                    </p>
-                    <p>
-                        The collected data shall be used solely for:
-                    </p>
-                    <ul class="list-disc space-y-1 pl-5">
-                        <li>1. Alumni tracking and employability assessment</li>
-                        <li>2. Curriculum improvement and academic research</li>
-                        <li>3. Institutional accreditation and quality assurance</li>
-                        <li>4. Statistical analysis and reporting purposes</li>
-                    </ul>
-                    <p>
-                        Your personal information shall be treated with strict confidentiality and protected through appropriate organizational, physical, and technical security measures.
-                    </p>
-                    <p>
-                        The institution shall not disclose your personal data to unauthorized third parties without your consent unless required by law.
-                    </p>
-                    <p>
-                        By clicking the <span class="font-semibold">Start Survey</span> button you confirm that:
-                    </p>
-                    <ul class="list-disc space-y-1 pl-5">
-                        <li>1. The information you provided is true and accurate</li>
-                        <li>2. You voluntarily consent to the collection and processing of your data</li>
-                        <li>3. You understand your rights under the Data Privacy Act, including the right to access, correct, and withdraw your information</li>
-                    </ul>
-                    <p class="text-xs text-muted sm:text-sm">
-                        This consent is required before proceeding to the survey.
-                    </p>
-                </div>
-            </div>
-            <div class="consent-modal-footer">
-                <a
-                    href="{{ url('/survey') }}"
-                    class="start-btn inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-bold transition sm:text-lg"
-                >
-                    Start Survey
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </div>
+    {{-- ── INFO CARDS ── --}}
+    <section id="time" class="info-section">
+        <div class="section-wrap">
+            <div class="info-grid">
 
-    <section class="content-panel px-4 pb-6 pt-5 sm:px-5 sm:pb-7">
-        <div class="content-surface p-4 sm:p-5">
-            <div class="grid gap-4 md:grid-cols-2">
-                <article class="info-card">
-                    <div class="eyebrow">About</div>
-                    <h3 class="title-font mt-3 text-xl font-bold text-main sm:text-2xl">About This Study</h3>
-                    <p class="mt-2 text-sm leading-relaxed text-muted sm:text-base">
-                        The tracer study gathers insights on career paths, achievements, and alumni experiences to improve academic programs and institutional services.
-                    </p>
-                </article>
-
-                <article class="info-card">
-                    <div class="eyebrow">Time</div>
-                    <h3 class="title-font mt-3 text-xl font-bold text-main sm:text-2xl">Time Commitment</h3>
-                    <p class="mt-2 text-sm leading-relaxed text-muted sm:text-base">
-                        The survey takes around <span class="font-bold" style="color: #11243f;">15-20 minutes</span>.
-                        Please complete it in one sitting if possible.
-                    </p>
-                </article>
-            </div>
-
-            <article class="info-card mt-4">
-                <div class="eyebrow">Incentive</div>
-                <h3 class="title-font mt-3 text-xl font-bold text-main sm:text-2xl">Prize Incentive</h3>
-                <p class="mt-2 text-sm leading-relaxed text-muted sm:text-base">
-                    Every completed response receives one raffle entry for a chance to win an
-                    <span class="font-bold" style="color: #11243f;">Ateneo Jacket</span>.
-                </p>
-            </article>
-
-            <div class="timeline-shell mt-4">
-                <h3 class="title-font text-2xl font-bold text-main">What to Expect</h3>
-                <div class="timeline-grid mt-4">
-                    <div class="timeline-step">
-                        <div class="flex items-center gap-2">
-                            <span class="step-dot">1</span>
-                            <p class="font-bold text-main">Identification</p>
-                        </div>
-                        <p class="mt-2 text-sm text-muted">Provide contact and basic profile details.</p>
+                {{-- About This Study --}}
+                <div class="about-card">
+                    <div class="about-card-top blue-pattern">
+                        <div class="card-label">About This Study</div>
+                        <h3>Why Your Voice Matters</h3>
+                        <p>The tracer study gathers insights on career paths, achievements, and alumni experiences to improve academic programs and institutional services.</p>
                     </div>
-                    <div class="timeline-step">
-                        <div class="flex items-center gap-2">
-                            <span class="step-dot">2</span>
-                            <p class="font-bold text-main">Background</p>
+                    <div class="about-card-bottom">
+                        <div class="meta-row">
+                            <span class="meta-label">Conducted by</span>
+                            <span class="meta-value">Ateneo de Davao University</span>
                         </div>
-                        <p class="mt-2 text-sm text-muted">Share education and personal background data.</p>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="flex items-center gap-2">
-                            <span class="step-dot">3</span>
-                            <p class="font-bold text-main">Career & Feedback</p>
+                        <div class="meta-row">
+                            <span class="meta-label">Respondents</span>
+                            <span class="meta-value">Ateneo Alumni</span>
                         </div>
-                        <p class="mt-2 text-sm text-muted">Tell us about work outcomes and ADDU relevance.</p>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="flex items-center gap-2">
-                            <span class="step-dot">4</span>
-                            <p class="font-bold text-main">Submit</p>
+                        <div class="meta-row">
+                            <span class="meta-label">Purpose</span>
+                            <span class="meta-value">Program Improvement</span>
                         </div>
-                        <p class="mt-2 text-sm text-muted">Review responses and complete your entry.</p>
+                        <div class="meta-row">
+                            <span class="meta-label">Mandate</span>
+                            <span class="meta-value">CHED Institutional reporting</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="faq-shell mt-4">
-                <h3 class="title-font text-2xl font-bold text-main">Frequently Asked Questions</h3>
-                <div class="mt-4">
-                    <details class="faq-item" open>
-                        <summary>Are my answers anonymous?</summary>
-                        <p>No. However, responses are used for institutional research and reporting, and are handled confidentially.</p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Can I pause and continue later?</summary>
-                        <p>Yes. Use Save for Later and keep your resume code so you can continue where you left off.</p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>How long does the survey take?</summary>
-                        <p>Most alumni complete the survey within 15-20 minutes.</p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Who can answer this tracer study?</summary>
-                        <p>It is intended for ADDU alumni who are invited to provide post-graduation outcomes and feedback.</p>
-                    </details>
+                {{-- Time Commitment --}}
+                <div class="time-card">
+                    <div class="time-card-top blue-pattern">
+                        <div class="card-label">Time Commitment</div>
+                        <div class="time-number">
+                            <span class="time-big">15–20</span>
+                            <span>
+                                <span class="time-unit">minutes</span>
+                                <span class="time-subunit">to complete</span>
+                            </span>
+                        </div>
+                        <p class="time-caption" style="margin-top:0.5rem;">Please complete it in one sitting if possible.</p>
+                    </div>
+                    <div class="time-card-bottom">
+                        <div class="time-item">
+                            <span class="time-item-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14.5 14.5"/></svg>
+                            </span>
+                            <span>
+                                <span class="time-item-title">One sitting recommended</span>
+                                <span class="time-item-desc">For the best experience, try to finish without interruption unless you choose to save your progress.</span>
+                            </span>
+                        </div>
+                        <div class="time-item">
+                            <span class="time-item-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+                            </span>
+                            <span>
+                                <span class="time-item-title">Resume anytime</span>
+                                <span class="time-item-desc">Not ready to finish now? Save your spot and pick up right where you left off using your resume code.</span>
+                            </span>
+                        </div>
+                        <div class="time-item">
+                            <span class="time-item-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </span>
+                            <span>
+                                <span class="time-item-title">Your privacy matters</span>
+                                <span class="time-item-desc">All responses are kept confidential and used only for research, shared exclusively in aggregate form.</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    {{-- ── WHAT TO EXPECT ── --}}
+    <section id="what-to-expect" class="expect-section">
+        <div class="section-wrap">
+            <div class="section-eyebrow">What to Expect</div>
+
+            <div class="step-tabs" style="margin-top:0.5rem;">
+                <template x-for="(step, i) in steps" :key="i">
+                    <button
+                        @click="activeStep = i"
+                        :class="activeStep === i ? 'step-tab active' : 'step-tab inactive'"
+                        x-html="step.tabHtml"
+                    ></button>
+                </template>
+            </div>
+
+            <div class="step-preview-wrap">
+                <button class="step-nav-btn" @click="activeStep = (activeStep - 1 + steps.length) % steps.length">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+
+                <div class="step-preview-card">
+                    <div class="step-preview-icon" x-html="steps[activeStep].previewIcon"></div>
+                    <div class="step-preview-content">
+                        <span class="step-badge" x-text="'STEP ' + steps[activeStep].num + ' OF 4'"></span>
+                        <div class="step-title" x-text="steps[activeStep].title"></div>
+                        <div class="step-desc" x-text="steps[activeStep].desc"></div>
+                    </div>
+                    <div class="step-big-number" x-text="steps[activeStep].num"></div>
+                </div>
+
+                <button class="step-nav-btn" @click="activeStep = (activeStep + 1) % steps.length">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <div class="step-dots">
+                <template x-for="(step, i) in steps" :key="i">
+                    <button class="step-dot" :class="activeStep === i ? 'active' : ''" @click="activeStep = i"></button>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    {{-- ── FAQs ── --}}
+    <section id="faqs" class="faq-section">
+        <div class="section-wrap">
+            <div class="section-eyebrow">FAQs</div>
+            <h2 class="faq-section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <p class="faq-q"><span class="faq-bullet">●</span>Are my answers anonymous?</p>
+                    <p class="faq-a">No. However, responses are used solely for institutional research and reporting purposes, and are handled with strict confidentiality.</p>
+                </div>
+                <div class="faq-card">
+                    <p class="faq-q"><span class="faq-bullet">●</span>Can I pause and continue later?</p>
+                    <p class="faq-a">Yes. Use the "Save for Later" option and keep your resume code so you can pick up right where you left off.</p>
+                </div>
+                <div class="faq-card">
+                    <p class="faq-q"><span class="faq-bullet">●</span>How long does the survey take?</p>
+                    <p class="faq-a">Most alumni complete the survey within 15 to 20 minutes. We recommend doing it in one sitting if possible.</p>
+                </div>
+                <div class="faq-card">
+                    <p class="faq-q"><span class="faq-bullet">●</span>Who can answer this tracer study?</p>
+                    <p class="faq-a">This tracer study is intended for AdDU alumni who have been invited to provide their post-graduation outcomes and feedback.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ── FOOTER ── --}}
+    <div class="footer-contact">
+        Still have questions? Reach out to the AdDU Office of Alumni Relations.
     </div>
+    <footer class="footer-bar">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="footer-seal" onerror="this.style.display='none'">
+                <span>
+                    <span class="footer-brand-title">Ateneo Alumni Tracer Study</span>
+                    <span class="footer-brand-sub">Strong in Faith That Does Justice</span>
+                </span>
+            </div>
+            <span class="footer-copy">&copy; {{ date('Y') }} Office of Alumni Relations</span>
+        </div>
+    </footer>
+
+    {{-- ── PRIVACY MODAL ── --}}
+    <div class="modal-backdrop" x-show="showModal" x-cloak @click.self="showModal = false">
+        <div class="modal-box" @click.stop>
+            <div class="modal-header">
+                <div class="modal-hd-icon">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <div style="flex:1;">
+                    <div class="modal-hd-title">Data Privacy &amp; Consent</div>
+                    <div class="modal-hd-sub">Please read carefully before proceeding.</div>
+                </div>
+                <button class="modal-close-btn" @click="showModal = false">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>Ateneo de Davao University is committed to protecting your personal data in accordance with the Data Privacy Act of 2012 (R.A. 10173). By participating in this tracer study, you agree to the collection and processing of your information as described below.</p>
+
+                <span class="modal-stitle">What data we collect</span>
+                <p>We collect personal and professional information including your contact details, educational background, employment status, and feedback on your AdDU experience.</p>
+
+                <span class="modal-stitle">How your data is used</span>
+                <p>Your responses are used exclusively for institutional research to assess program quality, improve academic offerings, and fulfill government reporting requirements (e.g., CHED).</p>
+
+                <span class="modal-stitle">Your privacy matters</span>
+                <p>All responses are kept confidential and used only for research, shared exclusively in aggregate form. Individual responses will not be publicly attributed to you.</p>
+
+                <span class="modal-stitle">Resume anytime</span>
+                <p>Not ready to finish now? Save your spot and pick up right where you left off using your resume code. For the best experience, try to finish in one sitting if possible.</p>
+            </div>
+
+            <div class="modal-footer">
+                <label class="consent-label">
+                    <input type="checkbox" x-model="agreed">
+                    <span>I have read and understood the data privacy notice, and I voluntarily consent to participate in this tracer study.</span>
+                </label>
+                <div class="modal-actions">
+                    <button class="btn-cancel" @click="showModal = false">Cancel</button>
+                    <a
+                        href="{{ url('/survey') }}"
+                        class="btn-proceed"
+                        :class="!agreed ? 'disabled' : ''"
+                        @click.prevent="if(agreed) window.location='{{ url('/survey') }}'"
+                    >
+                        Proceed to Survey
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    (function () {
-        const openButton = document.getElementById('openConsentModal');
-        const closeButton = document.getElementById('closeConsentModal');
-        const modal = document.getElementById('consentModal');
+function homeApp() {
+    const personIcon = `<svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    const bgIcon     = `<svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`;
+    const careerIcon = `<svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>`;
+    const submitIcon = `<svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
 
-        if (!openButton || !closeButton || !modal) {
-            return;
-        }
+    return {
+        showModal: false,
+        agreed: false,
+        activeStep: 0,
+        activeSection: 'about',
+        scrolled: false,
 
-        const openModal = () => {
-            modal.hidden = false;
-            modal.setAttribute('aria-hidden', 'false');
-        };
+        steps: [
+            {
+                num: '01', title: 'Identification',
+                desc: 'Tell us a bit about yourself, including your contact details, so we can match your entry to your alumni record.',
+                tabHtml: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>01 &middot; Identification</span>`,
+                previewIcon: personIcon,
+            },
+            {
+                num: '02', title: 'Background',
+                desc: 'Share your educational background and personal history to help us understand your journey after AdDU.',
+                tabHtml: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg><span>02 &middot; Background</span>`,
+                previewIcon: bgIcon,
+            },
+            {
+                num: '03', title: 'Career & Feedback',
+                desc: 'Tell us about your current work, career outcomes, and how your AdDU education prepared you for professional life.',
+                tabHtml: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg><span>03 &middot; Career &amp; Feedback</span>`,
+                previewIcon: careerIcon,
+            },
+            {
+                num: '04', title: 'Review & Submit',
+                desc: 'Review your answers carefully and submit your completed tracer study response.',
+                tabHtml: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>04 &middot; Review &amp; Submit</span>`,
+                previewIcon: submitIcon,
+            },
+        ],
 
-        const closeModal = () => {
-            modal.hidden = true;
-            modal.setAttribute('aria-hidden', 'true');
-        };
+        openModal() {
+            this.agreed = false;
+            this.showModal = true;
+        },
 
-        openButton.addEventListener('click', openModal);
-        closeButton.addEventListener('click', closeModal);
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && !modal.hidden) {
-                closeModal();
-            }
-        });
-    })();
+        init() {
+            const onScroll = () => { this.scrolled = window.scrollY > 28; };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            const sections = [
+                { id: 'about',          key: 'about' },
+                { id: 'time',           key: 'time' },
+                { id: 'what-to-expect', key: 'expect' },
+                { id: 'faqs',           key: 'faqs' },
+            ];
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        const match = sections.find(s => s.id === e.target.id);
+                        if (match) this.activeSection = match.key;
+                    }
+                });
+            }, { rootMargin: '-40% 0px -55% 0px' });
+            sections.forEach(s => {
+                const el = document.getElementById(s.id);
+                if (el) observer.observe(el);
+            });
+        },
+    };
+}
 </script>
 @endsection

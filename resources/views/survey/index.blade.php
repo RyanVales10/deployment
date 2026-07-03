@@ -84,38 +84,37 @@
     {{-- ── Survey Form ── --}}
     <div class="min-h-screen survey-page pb-28">
             {{-- Header --}}
-            <div class="bg-white border-b border-border sticky top-0 z-40">
-                <div class="max-w-4xl mx-auto px-6 py-4">
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <h1 class="text-2xl font-bold text-[#003087]">ADDU Alumni Tracer Study</h1>
-                            <p class="text-sm text-muted-foreground mt-1">
-                                <span x-text="'Section ' + currentSection + ' of ' + totalSections"></span>
-                            </p>
-                        </div>
-                        <div class="w-full max-w-xs">
-                            <div class="survey-progress-shell">
-                                <div
-                                    class="survey-progress-fill"
-                                    :style="{ width: (currentSection / totalSections * 100) + '%' }"
-                                ></div>
+            <div style="background:#09107a; box-shadow:0 2px 12px rgba(0,0,0,0.22);" class="sticky top-0 z-40">
+                {{-- Top bar --}}
+                <div class="max-w-4xl mx-auto px-6 py-3">
+                    <div class="flex items-center gap-4">
+                        <div style="flex:1; min-width:0;">
+                            <div class="flex items-center gap-2">
+                                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-7 h-7 rounded-full opacity-90 flex-shrink-0" onerror="this.style.display='none'">
+                                <div>
+                                    <div style="font-size:0.72rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#fff;">Ateneo Alumni Tracer Study</div>
+                                    <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);" x-text="'Section ' + currentSection + ' of ' + totalSections"></div>
+                                </div>
                             </div>
-                            <div class="mt-1 text-right text-[11px] font-semibold text-[#003087]/80" x-text="Math.round((currentSection / totalSections) * 100) + '%' "></div>
                         </div>
                         <template x-if="!isEditMode">
                             <button
                                 @click="showResumeDialog = true"
-                                class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors whitespace-nowrap"
+                                style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;"
                             >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
                                 Resume
                             </button>
                         </template>
-                        <a href="/admin" class="flex items-center gap-2 px-4 py-2 bg-[#003087] text-white rounded-lg hover:bg-blue-900 transition-colors whitespace-nowrap">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-                            Admin
+                        <a href="/" style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-size:0.78rem;font-weight:700;text-decoration:none;white-space:nowrap;">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                            Home
                         </a>
                     </div>
+                </div>
+                {{-- Progress bar --}}
+                <div style="height:3px;background:rgba(255,255,255,0.15);">
+                    <div style="height:100%;background:#f5b800;transition:width 0.35s ease;" :style="{ width: (currentSection / totalSections * 100) + '%' }"></div>
                 </div>
             </div>
 

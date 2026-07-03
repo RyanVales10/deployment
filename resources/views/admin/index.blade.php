@@ -18,21 +18,21 @@
     }
 
     .admin-topbar {
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(16, 35, 63, 0.08);
-        box-shadow: 0 8px 24px rgba(16, 35, 63, 0.05);
+        background: #09107a;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
 
     .admin-heading {
-        color: var(--admin-blue);
+        color: #fff;
         font-weight: 800;
-        letter-spacing: -0.03em;
+        letter-spacing: 0.01em;
+        font-size: 1rem !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    .admin-subtle {
-        color: var(--admin-muted);
-    }
+    .admin-subtle { display: none; }
 
     .admin-back-btn,
     .admin-tab-btn,
@@ -44,37 +44,40 @@
     }
 
     .admin-back-btn {
-        background: linear-gradient(90deg, var(--admin-blue) 0%, var(--admin-blue-deep) 100%);
+        background: rgba(255,255,255,0.12);
         color: #fff;
-        box-shadow: 0 10px 22px rgba(0, 48, 135, 0.22);
+        border: 1.5px solid rgba(255,255,255,0.3);
+        box-shadow: none;
     }
 
     .admin-back-btn:hover {
-        background: linear-gradient(90deg, var(--admin-blue-deep) 0%, #001844 100%);
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.6);
     }
 
     .admin-tab-shell {
-        border-bottom: 1px solid rgba(16, 35, 63, 0.08);
-        background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+        border-bottom: none;
+        background: rgba(255,255,255,0.06);
     }
 
     .admin-tab-btn {
-        padding: 1rem 1rem 0.9rem;
+        padding: 0.7rem 1rem;
         border-bottom: 3px solid transparent;
+        font-size: 0.85rem;
     }
 
     .admin-tab-btn.active {
-        color: var(--admin-blue);
+        color: #fff;
         border-bottom-color: var(--admin-gold);
     }
 
     .admin-tab-btn.inactive {
-        color: #5d6d82;
+        color: rgba(255,255,255,0.55);
     }
 
     .admin-tab-btn.inactive:hover {
-        color: var(--admin-blue);
-        border-bottom-color: rgba(0, 48, 135, 0.25);
+        color: rgba(255,255,255,0.85);
+        border-bottom-color: rgba(255,255,255,0.25);
     }
 
     .admin-panel,
@@ -166,12 +169,14 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between gap-4">
                 <div class="flex-1">
-                    <h1 class="admin-heading text-3xl">ADDU Tracer Study Admin</h1>
-                    <p class="admin-subtle text-sm mt-1">Manage your survey with stronger contrast and clearer controls</p>
+                    <div class="flex items-center gap-2">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-7 h-7 rounded-full opacity-90" onerror="this.style.display='none'">
+                        <h1 class="admin-heading">Tracer Study Admin</h1>
+                    </div>
                 </div>
-                <a href="/" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Back to Form
+                <a href="/" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back to Site
                 </a>
             </div>
         </div>
