@@ -485,7 +485,7 @@
                                                 <div class="relative">
                                                     <input
                                                         type="text"
-                                                        class="w-full px-4 py-3 border border-border rounded-lg pr-10"
+                                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg pr-10 focus:border-[#003087] focus:outline-none transition"
                                                         :placeholder="
                                                             question.type === 'province_select'     && psgc.provinces.length === 0     ? 'Select a region first...' :
                                                             question.type === 'municipality_select' && psgc.municipalities.length === 0 ? 'Select a province first...' :
@@ -495,39 +495,40 @@
                                                             (question.type === 'province_select'     && psgc.provinces.length === 0) ||
                                                             (question.type === 'municipality_select' && psgc.municipalities.length === 0) ||
                                                             (question.type === 'barangay_select'     && psgc.barangays.length === 0)"
-                                                        :value="psgcSearch[question.id] || ''"
+                                                        :value="formData[question.id] ? (psgcSearch[question.id] || '') : (psgcSearch[question.id] || '')"
                                                         @input="psgcSearch[question.id] = $event.target.value"
                                                         @focus="psgcOpen[question.id] = true"
                                                         @blur="setTimeout(() => { psgcOpen[question.id] = false }, 150)"
                                                     >
                                                     <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                                                         <template x-if="formData[question.id] && !psgcOpen[question.id]">
-                                                            <span class="text-xs text-gray-500 max-w-[160px] truncate" x-text="formData[question.id]"></span>
+                                                            <svg class="w-5 h-5 text-[#003087]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                                         </template>
                                                         <template x-if="!formData[question.id] || psgcOpen[question.id]">
                                                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
                                                         </template>
                                                     </div>
                                                 </div>
-                                                <template x-if="formData[question.id] && !psgcOpen[question.id]">
-                                                    <div class="mt-1 flex items-center gap-2">
-                                                        <span class="text-sm font-medium text-[#003087]" x-text="formData[question.id]"></span>
-                                                        <button type="button" @click="delete formData[question.id]; psgcSearch[question.id] = ''; clearPsgcDownstream(question.type)" class="text-xs text-gray-400 hover:text-red-500">✕</button>
-                                                    </div>
-                                                </template>
                                                 <div
                                                     x-show="psgcOpen[question.id] && getPsgcFiltered(question.id, question.type).length > 0"
-                                                    class="absolute z-20 w-full bg-white border border-border rounded-lg shadow-lg mt-1 max-h-56 overflow-y-auto"
+                                                    class="absolute z-40 w-full bg-white border-2 border-[#003087] rounded-lg shadow-2xl mt-2 max-h-64 overflow-y-scroll"
+                                                    style="scrollbar-width: thin; scrollbar-color: #003087 #e5e7eb;"
                                                 >
                                                     <template x-for="item in getPsgcFiltered(question.id, question.type)" :key="getPsgcCode(item)">
                                                         <div
                                                             @mousedown.prevent="selectPsgcItem(question, item)"
-                                                            class="px-4 py-2 text-sm cursor-pointer hover:bg-blue-50"
-                                                            :class="formData[question.id] === getPsgcName(item) ? 'bg-blue-50 font-medium text-[#003087]' : 'text-gray-800'"
+                                                            class="px-4 py-3 text-sm cursor-pointer hover:bg-[#e7f0ff] border-b border-gray-100 transition"
+                                                            :class="formData[question.id] === getPsgcName(item) ? 'bg-[#e7f0ff] font-medium text-[#003087]' : 'text-gray-800'"
                                                             x-text="getPsgcName(item)"
                                                         ></div>
                                                     </template>
                                                 </div>
+                                                <template x-if="formData[question.id] && !psgcOpen[question.id]">
+                                                    <div class="mt-2 text-sm text-gray-600 flex items-center justify-between">
+                                                        <span class="font-medium text-[#003087]" x-text="'✓ ' + formData[question.id]"></span>
+                                                        <button type="button" @click="delete formData[question.id]; psgcSearch[question.id] = ''; clearPsgcDownstream(question.type)" class="text-xs text-gray-400 hover:text-red-500 transition">Clear</button>
+                                                    </div>
+                                                </template>
                                             </div>
                                         </template>
 
@@ -667,11 +668,15 @@ function surveyApp() {
             fetch('https://restcountries.com/v3.1/all?fields=name')
                 .then(r => r.json())
                 .then(data => {
+                    console.log('Countries API response:', data);
                     this.countries = data
                         .map(c => c.name.common)
                         .sort((a, b) => a.localeCompare(b));
+                    console.log('Loaded countries:', this.countries.length);
                 })
-                .catch(() => {});
+                .catch(err => {
+                    console.error('Countries API failed:', err);
+                });
             fetch('https://psgc.gitlab.io/api/regions/')
                 .then(r => r.json())
                 .then(data => {
