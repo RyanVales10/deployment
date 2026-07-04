@@ -4,80 +4,94 @@
 
 @section('content')
 <style>
+    @import url('https://fonts.bunny.net/css?family=cinzel:400,700,800|nunito-sans:300,400,500,600,700,800');
+
     .admin-shell {
-        --admin-blue: #003087;
-        --admin-blue-deep: #001f57;
+        --admin-blue: #09107a;
+        --admin-blue-deep: #060c52;
         --admin-gold: #f5b800;
         --admin-ink: #10233f;
         --admin-muted: #5a6b86;
         min-height: 100vh;
-        background:
-            radial-gradient(circle at top left, rgba(0, 48, 135, 0.10), transparent 28%),
-            radial-gradient(circle at bottom right, rgba(245, 184, 0, 0.10), transparent 24%),
-            linear-gradient(180deg, #f5f7fb 0%, #eef3fb 100%);
+        background: #f0f2f8;
+        font-family: 'Nunito Sans', -apple-system, sans-serif;
     }
 
     .admin-topbar {
         background: #09107a;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
 
     .admin-heading {
+        font-family: 'Cinzel', serif;
         color: #fff;
-        font-weight: 800;
-        letter-spacing: 0.01em;
-        font-size: 1rem !important;
+        font-weight: 700;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
     }
 
     .admin-subtle { display: none; }
 
-    .admin-back-btn,
-    .admin-tab-btn,
-    .admin-action-btn,
-    .admin-icon-btn {
-        border-radius: 12px;
-        font-weight: 700;
-        transition: all 0.2s ease;
-    }
-
     .admin-back-btn {
-        background: rgba(255,255,255,0.12);
-        color: #fff;
-        border: 1.5px solid rgba(255,255,255,0.3);
-        box-shadow: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.82rem;
+        transition: all 0.15s;
+        background: #fff;
+        color: #09107a;
+        border: none;
+        padding: 0.4rem 0.9rem;
+        text-decoration: none;
+        white-space: nowrap;
     }
 
     .admin-back-btn:hover {
-        background: rgba(255,255,255,0.2);
-        border-color: rgba(255,255,255,0.6);
+        background: #e8edf6;
     }
 
+    /* White tab bar below topbar */
     .admin-tab-shell {
-        border-bottom: none;
-        background: rgba(255,255,255,0.06);
+        background: #fff;
+        border-bottom: 1px solid #e8edf6;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
     .admin-tab-btn {
-        padding: 0.7rem 1rem;
-        border-bottom: 3px solid transparent;
-        font-size: 0.85rem;
+        padding: 0.75rem 1.1rem;
+        border-bottom: 2.5px solid transparent;
+        font-size: 0.88rem;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 700;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: color 0.15s, border-color 0.15s;
     }
 
     .admin-tab-btn.active {
-        color: #fff;
-        border-bottom-color: var(--admin-gold);
+        color: #09107a;
+        border-bottom-color: #09107a;
     }
 
     .admin-tab-btn.inactive {
-        color: rgba(255,255,255,0.55);
+        color: #6b7a99;
     }
 
     .admin-tab-btn.inactive:hover {
-        color: rgba(255,255,255,0.85);
-        border-bottom-color: rgba(255,255,255,0.25);
+        color: #09107a;
+        border-bottom-color: rgba(9,16,122,0.3);
     }
 
     .admin-panel,
@@ -91,32 +105,89 @@
     }
 
     .admin-hero {
-        background: linear-gradient(135deg, var(--admin-blue) 0%, #0a4cc1 60%, #1e5bd3 100%);
+        background: linear-gradient(135deg, #09107a 0%, #1a24d2 100%);
         color: white;
-        border-radius: 18px;
-        box-shadow: 0 18px 38px rgba(0, 48, 135, 0.28);
+        border-radius: 14px 14px 0 0;
+        padding: 1.5rem 1.75rem;
+    }
+
+    .admin-hero-eyebrow {
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--admin-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .admin-hero-eyebrow::before { content: '—'; }
+
+    .admin-hero h1 {
+        font-family: 'Cinzel', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.3rem;
     }
 
     .admin-hero .muted {
-        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.65);
     }
 
-    .admin-section-label {
-        color: var(--admin-blue);
-        font-size: 0.95rem;
+    .admin-hero-badges {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .admin-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 999px;
+        padding: 0.35rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.85);
+    }
+
+    .admin-hero-badge span {
+        color: var(--admin-gold);
         font-weight: 800;
-        letter-spacing: 0.02em;
+    }
+
+    .admin-hero-badge-label { font-weight: 700; }
+
+    .admin-section-label {
+        font-family: 'Nunito Sans', sans-serif;
+        color: var(--admin-ink);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
     }
 
     .admin-action-btn {
-        background: linear-gradient(90deg, var(--admin-blue) 0%, var(--admin-blue-deep) 100%);
+        background: #09107a;
         color: #fff;
-        box-shadow: 0 10px 20px rgba(0, 48, 135, 0.22);
+        border-radius: 999px;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
     }
 
-    .admin-action-btn:hover {
-        background: linear-gradient(90deg, var(--admin-blue-deep) 0%, #001844 100%);
-    }
+    .admin-action-btn:hover { background: #1a24d2; }
 
     .admin-warning-btn {
         background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
@@ -169,14 +240,17 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between gap-4">
                 <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-7 h-7 rounded-full opacity-90" onerror="this.style.display='none'">
-                        <h1 class="admin-heading">Tracer Study Admin</h1>
+                    <div class="flex items-center gap-2.5">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-8 h-8 rounded-full opacity-90" onerror="this.style.display='none'">
+                        <div>
+                            <h1 class="admin-heading" style="line-height:1.1;">Tracer Study Admin</h1>
+                            <p style="font-family:'Nunito Sans',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.55);letter-spacing:0.03em;margin:0;line-height:1.2;">Alumni Affairs Office</p>
+                        </div>
                     </div>
                 </div>
                 <a href="/" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Back to Site
+                    Home
                 </a>
             </div>
         </div>
@@ -198,21 +272,27 @@
 
     {{-- Main Content --}}
     <div class="max-w-7xl mx-auto px-6 py-8">
-        <div class="admin-panel p-8">
+        <div class="admin-panel overflow-hidden">
             {{-- Tracer Study Management Header --}}
-            <div class="admin-hero p-6 mb-6">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="admin-hero mb-0">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h1 class="text-3xl font-extrabold mb-2">Tracer Study Management</h1>
+                        <p class="admin-hero-eyebrow">Survey Management</p>
+                        <h1>Tracer Study Management</h1>
                         <p class="muted">Create and manage survey categories, questions, and answer options</p>
                     </div>
-                    <div class="flex flex-wrap gap-2 text-sm text-white/90">
-                        <span class="admin-badge blue">📋 <span x-text="categories.length"></span> Categories</span>
-                        <span class="admin-badge gold">❓ <span x-text="totalQuestions"></span> Questions</span>
+                    <div class="admin-hero-badges">
+                        <div class="admin-hero-badge">
+                            Categories <span x-text="categories.length"></span>
+                        </div>
+                        <div class="admin-hero-badge">
+                            Questions <span x-text="totalQuestions"></span>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <div class="px-8 pb-8 pt-3">
             {{-- Tabs --}}
             <div class="mb-6 border-b border-slate-200">
                 <div class="flex gap-6">
@@ -636,6 +716,7 @@
                     </div>
                 </div>
             </template>
+            </div>{{-- /p-8 --}}
         </div>
     </div>
 </div>

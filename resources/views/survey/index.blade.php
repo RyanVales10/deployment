@@ -4,9 +4,149 @@
 
 @section('content')
 <style>
+    @import url('https://fonts.bunny.net/css?family=cinzel:400,700,800|nunito-sans:300,400,500,600,700,800');
+
     .survey-page {
         background: #f2f4f8;
+        font-family: 'Nunito Sans', -apple-system, sans-serif;
     }
+
+    /* ── Survey Navbar ── */
+    .survey-navbar {
+        background: #09107a;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+        position: sticky;
+        top: 0;
+        z-index: 40;
+    }
+
+    .survey-scroll-bar {
+        height: 4px;
+        background: #fff;
+    }
+
+    .survey-navbar-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0.6rem 1.5rem;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .survey-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 0;
+    }
+
+    .survey-brand-seal {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: contain;
+        opacity: 0.92;
+        flex-shrink: 0;
+    }
+
+    .survey-brand-title {
+        display: block;
+        font-family: 'Cinzel', serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #fff;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+
+    .survey-brand-sub {
+        display: block;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.65rem;
+        color: rgba(255,255,255,0.55);
+        line-height: 1.3;
+    }
+
+    .survey-progress-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .survey-progress-track {
+        flex: 1;
+        height: 7px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .survey-progress-fill {
+        height: 100%;
+        background: #f5b800;
+        border-radius: 999px;
+        transition: width 0.35s ease;
+    }
+
+    .survey-progress-pct {
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #f5b800;
+        white-space: nowrap;
+        min-width: 2.2rem;
+        text-align: right;
+    }
+
+    .survey-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.38rem 0.9rem;
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.45);
+        border-radius: 8px;
+        color: #fff;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s, border-color 0.15s;
+        white-space: nowrap;
+    }
+
+    .survey-nav-btn:hover {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.7);
+    }
+
+    .survey-nav-btn svg { width: 13px; height: 13px; }
+
+    .survey-nav-btn-home {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.38rem 0.9rem;
+        background: #fff;
+        border: 1.5px solid #fff;
+        border-radius: 8px;
+        color: #09107a;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.15s;
+    }
+
+    .survey-nav-btn-home svg { width: 13px; height: 13px; }
+    .survey-nav-btn-home:hover { background: #eef2ff; }
 
     .survey-sheet {
         background: #f6f7fb;
@@ -46,77 +186,112 @@
     }
 
     .nav-footer {
-        background: linear-gradient(90deg, #182c4f 0%, #22385f 50%, #182c4f 100%);
-        border-top: 1px solid #314a74;
+        background: #f2f4f8;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .nav-footer-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
     }
 
     .nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.65rem 1.4rem;
         border-radius: 10px;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.88rem;
         font-weight: 700;
-        transition: all 0.2s ease;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+        text-decoration: none;
     }
+
+    .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
     .nav-btn-prev {
-        background: #0f213e;
-        color: #fff;
-        border: 1px solid #2f4b78;
+        background: transparent;
+        color: #6b7a99;
+        border: 1.5px solid #d0daea;
     }
+
+    .nav-btn-prev:hover { border-color: #09107a; color: #09107a; }
+    .nav-btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .nav-btn-save {
-        background: linear-gradient(90deg, #a34712 0%, #8d3a0e 100%);
-        color: #fff;
-        border: 1px solid #bf6b2e;
+        background: transparent;
+        color: #09107a;
+        border: 1.5px solid #c8d3ee;
     }
+
+    .nav-btn-save:hover { background: #f0f4ff; border-color: #09107a; }
+    .nav-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .nav-btn-next {
-        background: linear-gradient(90deg, #1d4ed8 0%, #1e40af 100%);
+        background: #09107a;
         color: #fff;
-        border: 1px solid #4d72df;
+        border: 1.5px solid #09107a;
     }
 
+    .nav-btn-next:hover { background: #1a24d2; border-color: #1a24d2; }
+
     .nav-btn-submit {
-        background: linear-gradient(90deg, #15803d 0%, #166534 100%);
+        background: #09107a;
         color: #fff;
-        border: 1px solid #34a164;
+        border: 1.5px solid #09107a;
     }
+
+    .nav-btn-submit:hover { background: #1a24d2; }
+    .nav-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 <div x-data="surveyApp()" x-cloak>
     {{-- ── Survey Form ── --}}
-    <div class="min-h-screen survey-page pb-28">
+    <div class="min-h-screen survey-page pb-12">
             {{-- Header --}}
-            <div style="background:#09107a; box-shadow:0 2px 12px rgba(0,0,0,0.22);" class="sticky top-0 z-40">
-                {{-- Top bar --}}
-                <div class="max-w-4xl mx-auto px-6 py-3">
-                    <div class="flex items-center gap-4">
-                        <div style="flex:1; min-width:0;">
-                            <div class="flex items-center gap-2">
-                                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-7 h-7 rounded-full opacity-90 flex-shrink-0" onerror="this.style.display='none'">
-                                <div>
-                                    <div style="font-size:0.72rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#fff;">Ateneo Alumni Tracer Study</div>
-                                    <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);" x-text="'Section ' + currentSection + ' of ' + totalSections"></div>
-                                </div>
-                            </div>
+            <nav class="survey-navbar">
+                <div class="survey-navbar-inner">
+
+                    {{-- Brand --}}
+                    <div class="survey-brand">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU" class="survey-brand-seal" onerror="this.style.display='none'">
+                        <span>
+                            <span class="survey-brand-title">Ateneo Graduate Tracer Study</span>
+                            <span class="survey-brand-sub" x-text="'Section ' + currentSection + ' of ' + totalSections"></span>
+                        </span>
+                    </div>
+
+                    {{-- Progress bar --}}
+                    <div class="survey-progress-wrap">
+                        <div class="survey-progress-track">
+                            <div class="survey-progress-fill" :style="{ width: Math.round(currentSection / totalSections * 100) + '%' }"></div>
                         </div>
+                        <span class="survey-progress-pct" x-text="Math.round(currentSection / totalSections * 100) + '%'"></span>
+                    </div>
+
+                    {{-- Buttons --}}
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
                         <template x-if="!isEditMode">
-                            <button
-                                @click="showResumeDialog = true"
-                                style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;"
-                            >
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+                            <button class="survey-nav-btn" @click="showResumeDialog = true">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 Resume
                             </button>
                         </template>
-                        <a href="/" style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;font-size:0.78rem;font-weight:700;text-decoration:none;white-space:nowrap;">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <a href="/" class="survey-nav-btn-home">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                             Home
                         </a>
                     </div>
+
                 </div>
-                {{-- Progress bar --}}
-                <div style="height:3px;background:rgba(255,255,255,0.15);">
-                    <div style="height:100%;background:#f5b800;transition:width 0.35s ease;" :style="{ width: (currentSection / totalSections * 100) + '%' }"></div>
-                </div>
-            </div>
+            </nav>
+            <div class="survey-scroll-bar"></div>
 
             {{-- Resume Dialog --}}
             <template x-if="showResumeDialog">
@@ -552,74 +727,83 @@
                                 </template>
                             </div>
 
-                            {{-- Thank-you on last section --}}
-                            <template x-if="currentSection === totalSections && !isEditMode">
-                                <div class="mt-8 p-6 bg-green-50 border-2 border-green-300 rounded-lg">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-medium text-green-900">Thank You for Your Participation!</h4>
-                                            <p class="text-sm text-green-700">Your responses will help us improve our programs and better serve future students.</p>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm text-green-800 mb-4">Please review your responses if needed. When you're ready, click "Submit Survey" to complete the tracer study.</p>
-                                    <p class="text-xs text-green-700"><strong>Confidentiality:</strong> All information you provide will be kept strictly confidential.</p>
-                                </div>
-                            </template>
                         </div>
                     </template>
                 </div>
             </div>
 
             {{-- Navigation Footer --}}
-            <div class="fixed bottom-0 left-0 right-0 nav-footer p-5 shadow-2xl z-50">
-                <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+            <div class="nav-footer">
+                <div class="nav-footer-inner">
                     <button
+                        class="nav-btn nav-btn-prev"
                         @click="previousSection()"
                         :disabled="currentSection === 1"
-                        :class="currentSection === 1 ? 'opacity-45 cursor-not-allowed' : ''"
-                        class="nav-btn nav-btn-prev flex items-center gap-2 px-6 py-3"
                     >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                         Previous Section
                     </button>
 
                     <template x-if="!isEditMode">
                         <button
+                            class="nav-btn nav-btn-save"
                             @click="saveForLater()"
                             :disabled="saving"
-                            class="nav-btn nav-btn-save flex items-center gap-2 px-6 py-3 disabled:opacity-50"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <span x-text="saving ? 'Saving...' : 'Save for Later'"></span>
                         </button>
                     </template>
 
                     <template x-if="currentSection < totalSections">
-                        <button
-                            @click="nextSection()"
-                            class="nav-btn nav-btn-next flex items-center gap-2 px-6 py-3"
-                        >
+                        <button class="nav-btn nav-btn-next" @click="nextSection()">
                             Next Section
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </template>
 
                     <template x-if="currentSection >= totalSections">
-                        <button
-                            @click="submitSurvey()"
-                            :disabled="saving"
-                            class="nav-btn nav-btn-submit flex items-center gap-2 px-8 py-3 disabled:opacity-50"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <button class="nav-btn nav-btn-submit" @click="submitSurvey()" :disabled="saving">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             <span x-text="saving ? 'Saving...' : (isEditMode ? 'Update Answers' : 'Submit Survey')"></span>
                         </button>
                     </template>
                 </div>
             </div>
         </div>
+
+    {{-- Submission Success Modal --}}
+    <div
+        x-show="showSuccessModal"
+        x-cloak
+        style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
+    >
+        <div style="background:#fff;border-radius:18px;max-width:500px;width:100%;box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
+            {{-- Modal top bar --}}
+            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.75rem 2rem 1.5rem;">
+                <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                    <svg width="24" height="24" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h2 style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.3rem;">Survey Submitted!</h2>
+                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.65);margin:0;">Ateneo Graduate Tracer Study</p>
+            </div>
+            {{-- Modal body --}}
+            <div style="padding:1.75rem 2rem;">
+                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#10233f;line-height:1.7;margin:0 0 1rem;">
+                    Thank you for completing the <strong>Graduate Tracer Survey!</strong> Your valuable responses will help us improve our academic programs and services.
+                </p>
+                <div style="background:#f0f4ff;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:0.85rem 1rem;margin-bottom:1.5rem;">
+                    <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:#2a3a6b;line-height:1.65;margin:0;">
+                        As a token of appreciation for your time and effort, you are entitled to participate in the <strong>raffle</strong> for a chance to win an <strong>official AdDU polo shirt!</strong>
+                    </p>
+                </div>
+                <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.75rem 1rem;background:#09107a;color:#fff;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -639,6 +823,7 @@ function surveyApp() {
         resumeError: '',
         saving: false,
         showSavedBanner: false,
+        showSuccessModal: false,
         showLogin: {{ ($errors->has('email') || $errors->has('password') || session('show_login_modal')) ? 'true' : 'false' }},
         countries: [],
         psgc: {
@@ -1155,12 +1340,12 @@ function surveyApp() {
                 });
 
                 if (res.ok) {
-                    alert('Thank you for completing the tracer study. Your responses have been submitted successfully!');
                     this.formData = {};
                     this.respondentEmail = null;
                     this.currentSection = 1;
                     this.isEditMode = false;
                     this.existingResponseId = null;
+                    this.showSuccessModal = true;
                 } else {
                     alert('Failed to submit. Please try again.');
                 }

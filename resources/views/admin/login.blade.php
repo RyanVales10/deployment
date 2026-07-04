@@ -19,21 +19,83 @@
         align-items: center;
         justify-content: center;
         padding: 1.5rem;
-        background-color: var(--blue);
-        background-image:
-            url('/images/pattern.png'),
-            linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
-        background-repeat: repeat, no-repeat;
-        background-size: 420px auto, cover;
-        background-blend-mode: overlay, normal;
+        position: relative;
+        background: linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
+        overflow: hidden;
+    }
+
+    /* Gold bar at top */
+    .login-page::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            #f5b800 18%,
+            #f5b800 82%,
+            transparent 100%);
+        z-index: 100;
+        pointer-events: none;
+    }
+
+    .login-page::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/pattern_1-01.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        filter: invert(1);
+        mix-blend-mode: overlay;
+        opacity: 1;
+        pointer-events: none;
+    }
+
+    .login-above-card {
+        position: absolute;
+        top: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        width: min(90%, 420px);
+        display: flex;
+        justify-content: center;
+    }
+
+    .login-above-card img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 12px rgba(255,255,255,0.15));
+    }
+
+    .login-card-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.85rem;
+        position: relative;
+        z-index: 1;
+        width: min(100%, 440px);
     }
 
     .login-card {
         background: #fff;
         border-radius: 14px;
-        width: min(100%, 440px);
+        width: 100%;
         padding: 2rem 2.25rem 2.25rem;
         box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+    }
+
+    .login-credit {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.5);
+        text-align: center;
+        margin: 0;
     }
 
     .login-seal {
@@ -78,11 +140,11 @@
 
     .login-title {
         font-family: 'Cinzel', serif;
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         font-weight: 700;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: var(--blue-dd);
+        color: #111;
         margin: 0 0 0.3rem;
     }
 
@@ -183,22 +245,11 @@
 </style>
 
 <div class="login-page">
+    <div class="login-above-card">
+        <img src="{{ asset('images/seal_side_white.png') }}" alt="Ateneo de Davao University">
+    </div>
+    <div class="login-card-wrap">
     <div class="login-card">
-
-        <div class="login-seal">
-            <img
-                src="{{ asset('images/ADDU-SEAL-Colored.png') }}"
-                alt="Ateneo de Davao University"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-            >
-            <div class="login-seal-placeholder" style="display:none;">
-                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
-                </svg>
-            </div>
-            <span class="login-school-name">Ateneo de Davao University</span>
-        </div>
 
         <h2 class="login-title">Admin Login</h2>
         <p class="login-sub">Use the registered admin account for sign in.</p>
@@ -224,8 +275,7 @@
                     name="email"
                     type="email"
                     class="form-input"
-                    value="{{ old('email', 'admin@addu.edu.ph') }}"
-                    placeholder="admin@addu.edu.ph"
+                    value="{{ old('email') }}"
                     required
                     autofocus
                 >
@@ -238,7 +288,6 @@
                     name="password"
                     type="password"
                     class="form-input"
-                    placeholder="••••••••"
                     required
                 >
             </div>
@@ -252,6 +301,8 @@
             </div>
         </form>
 
+    </div>
+    <p class="login-credit">Ateneo de Davao University &middot; Office of Alumni Relations</p>
     </div>
 </div>
 @endsection

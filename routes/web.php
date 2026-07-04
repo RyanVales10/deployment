@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 // Survey routes
 Route::get('/', [SurveyController::class, 'welcome']);
+Route::get('/developers', fn() => view('developers'));
 Route::get('/survey', [SurveyController::class, 'index']);
 Route::post('/survey/check-email', [SurveyController::class, 'checkEmail']);
 Route::post('/survey/submit', [SurveyController::class, 'submit']);

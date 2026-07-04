@@ -19,28 +19,30 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
         font-family: 'Nunito Sans', -apple-system, sans-serif;
         background: var(--bg);
         color: var(--ink);
     }
 
-    .cinzel { font-family: 'Cinzel', 'Times New Roman', serif; }
-
     /* ── Tribal pattern background ── */
     .blue-pattern {
         background-color: var(--blue-dd);
-        background-image:
-            url('/images/pattern.png'),
-            linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
-        background-repeat: repeat, no-repeat;
-        background-size: 420px auto, cover;
-        background-blend-mode: overlay, normal;
+        background-image: linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 
-    /* Fallback if pattern.png not found — still looks good */
-    .blue-pattern-fallback {
-        background: linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
+    .hero.blue-pattern {
+        background-image:
+            url('/images/2024_Bagobo_Pattern__White_.png'),
+            linear-gradient(160deg, #1a24d2 0%, #09107a 100%);
+        background-repeat: no-repeat, no-repeat;
+        background-size: 60% auto, cover;
+        background-position: right center, center;
+        background-blend-mode: soft-light, normal;
     }
 
     /* ── Navbar ── */
@@ -48,10 +50,9 @@
         background: var(--blue-dd);
         height: 58px;
         padding: 0 2.5rem;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        justify-content: space-between;
-        gap: 1.5rem;
         position: sticky;
         top: 0;
         z-index: 50;
@@ -85,9 +86,10 @@
     .navbar-brand {
         display: flex;
         align-items: center;
-        gap: 0.65rem;
+        gap: 0.75rem;
         text-decoration: none;
-        flex-shrink: 0;
+        justify-self: start;
+        margin-left: 1.5rem;
     }
 
     .navbar-seal {
@@ -99,20 +101,21 @@
 
     .navbar-brand-title {
         display: block;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
+        font-family: 'Cinzel', serif;
+        font-size: 0.95rem;
+        font-weight: 400;
+        letter-spacing: 0.04em;
         color: #fff;
         line-height: 1.3;
     }
 
     .navbar-brand-sub {
         display: block;
-        font-size: 0.58rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.52);
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        color: rgba(255,255,255,0.55);
         line-height: 1.3;
     }
 
@@ -121,6 +124,7 @@
         align-items: center;
         gap: 0.15rem;
         list-style: none;
+        justify-self: center;
     }
 
     .navbar-links a {
@@ -138,32 +142,32 @@
 
     .navbar-links a:hover {
         color: #fff;
-        border-bottom-color: rgba(245,184,0,0.55);
+        border-bottom-color: var(--gold-bright);
     }
 
     .navbar-links a.active {
         color: #fff;
-        border-bottom-color: var(--gold-bright);
     }
 
     .navbar-login {
         display: inline-flex;
         align-items: center;
-        padding: 0.4rem 1.1rem;
-        border: 1.5px solid rgba(255,255,255,0.5);
-        border-radius: 7px;
+        justify-self: end;
+        margin-right: 1.5rem;
+        padding: 0.45rem 1.5rem;
+        background: transparent;
+        border: 2px solid rgba(255,255,255,0.8);
+        border-radius: 10px;
         color: #fff;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 700;
+        letter-spacing: 0.03em;
         text-decoration: none;
-        letter-spacing: 0.02em;
-        transition: background 0.15s, border-color 0.15s;
-        flex-shrink: 0;
+        transition: background 0.2s;
     }
 
     .navbar-login:hover {
-        background: rgba(255,255,255,0.12);
-        border-color: rgba(255,255,255,0.8);
+        background: rgba(255,255,255,0.14);
     }
 
     /* ── Hero ── */
@@ -177,7 +181,7 @@
         margin: 0 auto;
         padding: 5rem 2.5rem 4.5rem;
         display: grid;
-        grid-template-columns: 1fr 180px;
+        grid-template-columns: 1fr 320px;
         gap: 3rem;
         align-items: center;
     }
@@ -186,7 +190,7 @@
         display: flex;
         align-items: center;
         gap: 0.55rem;
-        color: rgba(255,255,255,0.62);
+        color: var(--gold-bright);
         font-size: 0.7rem;
         font-weight: 700;
         letter-spacing: 0.14em;
@@ -199,7 +203,7 @@
         display: block;
         width: 30px;
         height: 2px;
-        background: var(--gold);
+        background: var(--gold-bright);
         flex-shrink: 0;
     }
 
@@ -213,7 +217,7 @@
         margin-bottom: 1.25rem;
     }
 
-    .hero h1 .gold { color: var(--gold-bright); }
+    .hero h1 .gold { color: #fff; }
 
     .hero-desc {
         color: rgba(255,255,255,0.75);
@@ -248,44 +252,40 @@
     .hero-seal-wrap {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
+        justify-content: flex-end;
+        padding-right: 1.5rem;
     }
 
     .hero-seal {
-        width: 160px;
-        height: 160px;
+        width: 230px;
+        height: 230px;
         border-radius: 50%;
         object-fit: contain;
-        filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+        filter: drop-shadow(0 6px 28px rgba(0,0,0,0.35));
     }
 
     /* ── Info Section ── */
     .info-section {
-        background: linear-gradient(180deg,
-            #d8e0f2 0%,
-            #e8edf8 15%,
-            #edf1fa 50%,
-            #e8edf8 85%,
-            #dde4f2 100%);
+        background: #f3f4f8;
     }
 
     .section-wrap {
-        max-width: 1120px;
+        max-width: 1280px;
         margin: 0 auto;
-        padding: 2.75rem 2.5rem;
+        padding: 2.75rem 1.5rem;
     }
 
     .section-eyebrow {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.15em;
+        font-family: 'Cinzel', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--gold);
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     .section-eyebrow::before {
@@ -297,13 +297,18 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
+        align-items: stretch;
+        align-items: start;
     }
 
     /* About card: blue top + white bottom */
     .about-card {
         border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 8px 28px rgba(9,16,122,0.18);
+        border: 1px solid rgba(201,162,39,0.2);
+        box-shadow: 0 4px 20px rgba(201,162,39,0.07), 0 8px 28px rgba(9,16,122,0.12);
+        display: flex;
+        flex-direction: column;
     }
 
     .about-card-top {
@@ -311,15 +316,16 @@
     }
 
     .about-card-top .card-label {
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
+        font-family: 'Cinzel', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--gold-bright);
+        color: var(--gold);
         display: flex;
         align-items: center;
-        gap: 0.35rem;
-        margin-bottom: 0.65rem;
+        gap: 0.45rem;
+        margin-bottom: 0.75rem;
     }
 
     .about-card-top .card-label::before { content: '—'; }
@@ -342,39 +348,41 @@
 
     .about-card-bottom {
         background: #fff;
-        padding: 0 1.75rem;
+        padding: 1rem 1.75rem 1rem;
+        flex: 1;
     }
 
     .meta-row {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.65rem 0;
-        border-bottom: 1px solid #eaecf4;
-        gap: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #eef0f8;
+        gap: 0.15rem;
     }
 
     .meta-row:last-child { border-bottom: none; }
 
     .meta-label {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         color: var(--muted);
-        font-weight: 500;
-        white-space: nowrap;
+        font-weight: 400;
     }
 
     .meta-value {
-        font-size: 0.82rem;
+        font-size: 0.95rem;
         font-weight: 700;
         color: var(--ink);
-        text-align: right;
     }
 
     /* Time commitment card */
     .time-card {
         border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 8px 28px rgba(9,16,122,0.18);
+        border: 1px solid rgba(201,162,39,0.2);
+        box-shadow: 0 4px 20px rgba(201,162,39,0.07), 0 8px 28px rgba(9,16,122,0.12);
+        display: flex;
+        flex-direction: column;
     }
 
     .time-card-top {
@@ -382,14 +390,15 @@
     }
 
     .time-card-top .card-label {
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
+        font-family: 'Cinzel', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--gold-bright);
+        color: var(--gold);
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.45rem;
         margin-bottom: 0.75rem;
     }
 
@@ -403,18 +412,20 @@
     }
 
     .time-big {
+        font-family: 'Cinzel', serif;
         font-size: 3.5rem;
-        font-weight: 800;
+        font-weight: 700;
         color: #fff;
         line-height: 1;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
     }
 
     .time-unit {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: rgba(255,255,255,0.75);
         line-height: 1;
+        white-space: nowrap;
     }
 
     .time-subunit {
@@ -431,32 +442,37 @@
     }
 
     .time-card-bottom {
-        background: rgba(255,255,255,0.07);
-        padding: 0.85rem 1.25rem;
+        background: #fff;
+        padding: 1rem 1.4rem;
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
+        gap: 0.65rem;
+        flex: 1;
+        justify-content: center;
     }
 
     .time-item {
-        background: rgba(255,255,255,0.9);
-        border-radius: 9px;
-        padding: 0.65rem 0.85rem;
+        background: #f5f8ff;
+        border: 1px solid #dde6f4;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
         display: flex;
+        flex-direction: row;
         align-items: flex-start;
-        gap: 0.7rem;
+        gap: 0.75rem;
     }
 
     .time-item-icon {
         width: 28px;
         height: 28px;
         border-radius: 50%;
-        border: 1.5px solid #d0d9ee;
+        border: 1.5px solid #c8d3f0;
+        background: #edf2ff;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        margin-top: 1px;
+        margin-top: 0.05rem;
     }
 
     .time-item-icon svg {
@@ -465,28 +481,28 @@
         color: var(--blue-dd);
     }
 
+    .time-item-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
     .time-item-title {
-        font-size: 0.8rem;
+        font-size: 0.88rem;
         font-weight: 700;
         color: var(--ink);
-        display: block;
-        margin-bottom: 0.15rem;
+        line-height: 1.3;
     }
 
     .time-item-desc {
-        font-size: 0.74rem;
-        line-height: 1.45;
+        font-size: 0.81rem;
         color: var(--muted);
+        line-height: 1.5;
     }
 
     /* ── What to Expect ── */
     .expect-section {
-        background: linear-gradient(180deg,
-            #e4eaf6 0%,
-            #f5f7fd 8%,
-            #ffffff 20%,
-            #ffffff 80%,
-            #f2f5fc 100%);
+        background: #f3f4f8;
     }
 
     .step-tabs {
@@ -499,10 +515,10 @@
     .step-tab {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
+        gap: 0.55rem;
+        padding: 0.6rem 1.3rem;
         border-radius: 50px;
-        font-size: 0.78rem;
+        font-size: 0.88rem;
         font-weight: 700;
         cursor: pointer;
         border: 1.5px solid transparent;
@@ -510,7 +526,7 @@
         letter-spacing: 0.01em;
     }
 
-    .step-tab svg { width: 14px; height: 14px; }
+    .step-tab svg { width: 15px; height: 15px; }
 
     .step-tab.active {
         background: var(--blue-dd);
@@ -521,12 +537,12 @@
     .step-tab.inactive {
         background: #fff;
         color: var(--muted);
-        border-color: #d0daea;
+        border-color: rgba(201,162,39,0.35);
     }
 
     .step-tab.inactive:hover {
-        border-color: var(--blue-dd);
-        color: var(--blue-dd);
+        border-color: var(--gold);
+        color: var(--ink);
     }
 
     .step-preview-wrap {
@@ -537,8 +553,8 @@
     }
 
     .step-nav-btn {
-        width: 34px;
-        height: 34px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         border: 1.5px solid #cdd7ee;
         background: #fff;
@@ -548,7 +564,7 @@
         cursor: pointer;
         flex-shrink: 0;
         transition: all 0.15s;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     .step-nav-btn:hover {
@@ -557,28 +573,28 @@
     }
 
     .step-nav-btn svg {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         color: var(--muted);
     }
 
     .step-preview-card {
         flex: 1;
         background: #fff;
-        border: 1px solid #dce4f4;
+        border: 1px solid rgba(201,162,39,0.15);
         border-radius: 14px;
-        padding: 1.75rem 2rem;
+        padding: 1.5rem 1.75rem;
         display: flex;
         align-items: center;
         gap: 1.5rem;
-        box-shadow: 0 4px 18px rgba(9,16,122,0.07);
+        box-shadow: 0 4px 24px rgba(9,16,122,0.08);
         overflow: hidden;
         position: relative;
     }
 
     .step-preview-icon {
-        width: 42px;
-        height: 42px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background: #edf2ff;
         display: flex;
@@ -588,36 +604,36 @@
     }
 
     .step-preview-icon svg {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         color: var(--blue-dd);
     }
 
     .step-preview-content { flex: 1; min-width: 0; }
 
     .step-badge {
-        font-size: 0.65rem;
+        font-size: 0.75rem;
         font-weight: 800;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--gold);
         display: block;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.5rem;
     }
 
     .step-title {
         font-family: 'Cinzel', serif;
-        font-size: 1.05rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: var(--ink);
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.5rem;
     }
 
     .step-desc {
-        font-size: 0.82rem;
-        line-height: 1.6;
+        font-size: 0.95rem;
+        line-height: 1.65;
         color: var(--muted);
     }
 
@@ -625,7 +641,7 @@
         font-family: 'Cinzel', serif;
         font-size: 6rem;
         font-weight: 800;
-        color: rgba(26,36,210,0.06);
+        color: rgba(26,36,210,0.05);
         line-height: 1;
         flex-shrink: 0;
         user-select: none;
@@ -657,11 +673,7 @@
 
     /* ── FAQs ── */
     .faq-section {
-        background: linear-gradient(180deg,
-            #eaeff9 0%,
-            #f0f3fb 15%,
-            #f0f3fb 85%,
-            #e5ebf5 100%);
+        background: #f3f4f8;
     }
 
     .faq-section-title {
@@ -683,13 +695,14 @@
 
     .faq-card {
         background: #fff;
-        border: 1px solid #dce4f4;
+        border: 1px solid rgba(201,162,39,0.15);
+        box-shadow: 0 2px 16px rgba(201,162,39,0.05);
         border-radius: 12px;
         padding: 1.15rem 1.35rem;
         transition: border-color 0.15s;
     }
 
-    .faq-card:hover { border-color: #b8c8e8; }
+    .faq-card:hover { }
 
     .faq-q {
         font-size: 0.86rem;
@@ -720,16 +733,17 @@
         padding: 1.1rem 2rem;
         font-size: 0.8rem;
         color: var(--muted);
-        background: linear-gradient(180deg, #e0e7f4 0%, #d5ddf0 100%);
+        background: #f3f4f8;
     }
 
     .footer-bar {
         background: var(--blue-dd);
-        padding: 1rem 2.5rem;
+        padding: 0.85rem 2.5rem;
+        position: relative;
     }
 
     .footer-inner {
-        max-width: 1120px;
+        max-width: 1280px;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -737,42 +751,22 @@
         gap: 1rem;
     }
 
-    .footer-brand {
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-    }
-
-    .footer-seal {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: contain;
-        opacity: 0.9;
-    }
-
     .footer-brand-title {
-        display: block;
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
+        font-family: 'Cinzel', serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: #fff;
-        line-height: 1.3;
     }
 
-    .footer-brand-sub {
-        display: block;
-        font-size: 0.6rem;
-        letter-spacing: 0.06em;
+    .footer-tagline {
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.45);
-        line-height: 1.3;
-    }
-
-    .footer-copy {
-        font-size: 0.73rem;
-        color: rgba(255,255,255,0.45);
+        color: #fff;
     }
 
     /* ── Modal ── */
@@ -799,21 +793,22 @@
     }
 
     .modal-header {
-        background: var(--blue-dd);
-        color: #fff;
-        padding: 1.1rem 1.35rem;
+        background: #fff;
+        color: var(--ink);
+        padding: 1.2rem 1.4rem;
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         gap: 0.85rem;
         flex-shrink: 0;
+        border-bottom: 1px solid #eef0f8;
     }
 
     .modal-hd-icon {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.14);
+        background: #edf2ff;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -821,25 +816,26 @@
         margin-top: 2px;
     }
 
-    .modal-hd-icon svg { width: 15px; height: 15px; color: rgba(255,255,255,0.9); }
+    .modal-hd-icon svg { width: 17px; height: 17px; color: var(--blue-dd); }
 
     .modal-hd-title {
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin-bottom: 0.15rem;
+        font-family: 'Cinzel', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--ink);
+        margin-bottom: 0.2rem;
     }
 
     .modal-hd-sub {
-        font-size: 0.7rem;
-        color: rgba(255,255,255,0.58);
+        font-size: 0.75rem;
+        color: var(--muted);
     }
 
     .modal-close-btn {
         background: none;
         border: none;
-        color: rgba(255,255,255,0.6);
+        color: #a0aec0;
         font-size: 1.35rem;
         cursor: pointer;
         line-height: 1;
@@ -847,19 +843,30 @@
         flex-shrink: 0;
     }
 
-    .modal-close-btn:hover { color: #fff; }
+    .modal-close-btn:hover { color: var(--ink); }
 
     .modal-body {
         overflow-y: auto;
         padding: 1.3rem 1.4rem 0.9rem;
-        font-size: 0.83rem;
-        line-height: 1.7;
+        font-size: 0.92rem;
+        line-height: 1.72;
         color: var(--ink);
         flex: 1;
     }
 
     .modal-body p { margin-bottom: 0.75rem; }
     .modal-body p:last-child { margin-bottom: 0; }
+
+    .modal-intro {
+        background: #f0f4ff;
+        border-left: 3px solid var(--blue-dd);
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem;
+        color: #2a3a6b;
+        font-size: 0.82rem;
+        line-height: 1.65;
+        margin-bottom: 1rem !important;
+    }
 
     .modal-stitle {
         font-size: 0.82rem;
@@ -888,12 +895,36 @@
     }
 
     .consent-label input[type="checkbox"] {
-        width: 15px;
-        height: 15px;
+        appearance: none;
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
         margin-top: 2px;
-        accent-color: var(--blue-dd);
-        flex-shrink: 0;
+        border: 2px solid #111;
+        border-radius: 3px;
+        background: #fff;
         cursor: pointer;
+        position: relative;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .consent-label input[type="checkbox"]:checked {
+        background: var(--blue-dd);
+        border-color: var(--blue-dd);
+    }
+
+    .consent-label input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        top: 0px;
+        width: 5px;
+        height: 9px;
+        border: 2px solid #fff;
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg);
     }
 
     .modal-actions {
@@ -1035,39 +1066,36 @@
                         <div class="card-label">Time Commitment</div>
                         <div class="time-number">
                             <span class="time-big">15–20</span>
-                            <span>
-                                <span class="time-unit">minutes</span>
-                                <span class="time-subunit">to complete</span>
-                            </span>
+                            <span class="time-unit">minutes to complete</span>
                         </div>
                         <p class="time-caption" style="margin-top:0.5rem;">Please complete it in one sitting if possible.</p>
                     </div>
                     <div class="time-card-bottom">
                         <div class="time-item">
                             <span class="time-item-icon">
-                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14.5 14.5"/></svg>
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14.5"/></svg>
                             </span>
-                            <span>
+                            <span class="time-item-text">
                                 <span class="time-item-title">One sitting recommended</span>
-                                <span class="time-item-desc">For the best experience, try to finish without interruption unless you choose to save your progress.</span>
+                                <span class="time-item-desc">For the best experience, finish in one sitting if possible.</span>
                             </span>
                         </div>
                         <div class="time-item">
                             <span class="time-item-icon">
-                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>
                             </span>
-                            <span>
+                            <span class="time-item-text">
                                 <span class="time-item-title">Resume anytime</span>
-                                <span class="time-item-desc">Not ready to finish now? Save your spot and pick up right where you left off using your resume code.</span>
+                                <span class="time-item-desc">Save your progress and pick up right where you left off.</span>
                             </span>
                         </div>
                         <div class="time-item">
                             <span class="time-item-icon">
-                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             </span>
-                            <span>
+                            <span class="time-item-text">
                                 <span class="time-item-title">Your privacy matters</span>
-                                <span class="time-item-desc">All responses are kept confidential and used only for research, shared exclusively in aggregate form.</span>
+                                <span class="time-item-desc">All responses are confidential and used only in aggregate form.</span>
                             </span>
                         </div>
                     </div>
@@ -1152,15 +1180,10 @@
     </div>
     <footer class="footer-bar">
         <div class="footer-inner">
-            <div class="footer-brand">
-                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="footer-seal" onerror="this.style.display='none'">
-                <span>
-                    <span class="footer-brand-title">Ateneo Alumni Tracer Study</span>
-                    <span class="footer-brand-sub">Strong in Faith That Does Justice</span>
-                </span>
-            </div>
-            <span class="footer-copy">&copy; {{ date('Y') }} Office of Alumni Relations</span>
+            <span class="footer-brand-title">Ateneo Graduate Tracer Study</span>
+            <span class="footer-tagline">Strong in Faith That Does Justice</span>
         </div>
+        <a href="/developers" class="footer-tagline" style="position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);text-decoration:none;color:rgba(255,255,255,0.45);transition:color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Meet the Developers</a>
     </footer>
 
     {{-- ── PRIVACY MODAL ── --}}
@@ -1178,17 +1201,13 @@
             </div>
 
             <div class="modal-body">
-                <p>Ateneo de Davao University is committed to protecting your personal data in accordance with the Data Privacy Act of 2012 (R.A. 10173). By participating in this tracer study, you agree to the collection and processing of your information as described below.</p>
-
+                <p class="modal-intro">Ateneo de Davao University is committed to protecting your personal data in accordance with the Data Privacy Act of 2012 (R.A. 10173). By participating in this tracer study, you agree to the collection and processing of your information as described below.</p>
                 <span class="modal-stitle">What data we collect</span>
                 <p>We collect personal and professional information including your contact details, educational background, employment status, and feedback on your AdDU experience.</p>
-
                 <span class="modal-stitle">How your data is used</span>
                 <p>Your responses are used exclusively for institutional research to assess program quality, improve academic offerings, and fulfill government reporting requirements (e.g., CHED).</p>
-
                 <span class="modal-stitle">Your privacy matters</span>
                 <p>All responses are kept confidential and used only for research, shared exclusively in aggregate form. Individual responses will not be publicly attributed to you.</p>
-
                 <span class="modal-stitle">Resume anytime</span>
                 <p>Not ready to finish now? Save your spot and pick up right where you left off using your resume code. For the best experience, try to finish in one sitting if possible.</p>
             </div>
