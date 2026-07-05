@@ -4,190 +4,195 @@
 
 @section('content')
 <style>
+    @import url('https://fonts.bunny.net/css?family=cinzel:400,700,800|nunito-sans:300,400,500,600,700,800');
+
     .admin-shell {
-        --admin-blue: #003087;
-        --admin-blue-deep: #001f57;
+        --admin-blue: #09107a;
         --admin-gold: #f5b800;
         --admin-ink: #10233f;
         --admin-muted: #5a6b86;
         min-height: 100vh;
-        background:
-            radial-gradient(circle at top left, rgba(0, 48, 135, 0.10), transparent 28%),
-            radial-gradient(circle at bottom right, rgba(245, 184, 0, 0.10), transparent 24%),
-            linear-gradient(180deg, #f5f7fb 0%, #eef3fb 100%);
+        background: #f0f2f8;
+        font-family: 'Nunito Sans', -apple-system, sans-serif;
     }
 
     .admin-topbar {
         background: #09107a;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
 
     .admin-heading {
+        font-family: 'Cinzel', serif;
         color: #fff;
-        font-weight: 800;
-        font-size: 1rem !important;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .admin-subtle { display: none; }
-
-    .admin-back-btn,
-    .admin-tab-btn,
-    .admin-action-btn,
-    .admin-icon-btn {
-        border-radius: 12px;
         font-weight: 700;
-        transition: all 0.2s ease;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
     }
 
     .admin-back-btn {
-        background: rgba(255,255,255,0.12);
-        color: #fff;
-        border: 1.5px solid rgba(255,255,255,0.3);
-        box-shadow: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.82rem;
+        transition: all 0.15s;
+        background: #fff;
+        color: #09107a;
+        border: none;
+        padding: 0.4rem 0.9rem;
+        text-decoration: none;
+        white-space: nowrap;
     }
 
-    .admin-back-btn:hover {
-        background: rgba(255,255,255,0.2);
-        border-color: rgba(255,255,255,0.6);
-    }
+    .admin-back-btn:hover { background: #e8edf6; }
 
     .admin-tab-shell {
-        border-bottom: none;
-        background: rgba(255,255,255,0.06);
+        background: #fff;
+        border-bottom: 1px solid #e8edf6;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
     .admin-tab-btn {
-        padding: 0.7rem 1rem;
-        border-bottom: 3px solid transparent;
-        font-size: 0.85rem;
+        padding: 0.75rem 1.1rem;
+        border-bottom: 2.5px solid transparent;
+        font-size: 0.88rem;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 700;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: color 0.15s, border-color 0.15s;
     }
 
     .admin-tab-btn.active {
-        color: #fff;
-        border-bottom-color: var(--admin-gold);
+        color: #09107a;
+        border-bottom-color: #09107a;
     }
 
-    .admin-tab-btn.inactive {
-        color: rgba(255,255,255,0.55);
-    }
+    .admin-tab-btn.inactive { color: #6b7a99; }
 
     .admin-tab-btn.inactive:hover {
-        color: rgba(255,255,255,0.85);
-        border-bottom-color: rgba(255,255,255,0.25);
+        color: #09107a;
+        border-bottom-color: rgba(9,16,122,0.3);
     }
 
     .admin-panel,
     .admin-card,
-    .admin-empty-state,
-    .response-row,
-    .detail-panel {
-        background: rgba(255, 255, 255, 0.96);
-        border: 1px solid rgba(16, 35, 63, 0.10);
+    .admin-empty-state {
+        background: rgba(255,255,255,0.96);
+        border: 1px solid rgba(16,35,63,0.10);
         border-radius: 18px;
-        box-shadow: 0 14px 30px rgba(16, 35, 63, 0.07);
+        box-shadow: 0 14px 30px rgba(16,35,63,0.07);
     }
 
     .admin-hero {
-        background: linear-gradient(135deg, var(--admin-blue) 0%, #0a4cc1 60%, #1e5bd3 100%);
+        background: linear-gradient(135deg, #09107a 0%, #1a24d2 100%);
         color: white;
-        border-radius: 18px;
-        box-shadow: 0 18px 38px rgba(0, 48, 135, 0.28);
+        border-radius: 14px 14px 0 0;
+        padding: 1.5rem 1.75rem;
+    }
+
+    .admin-hero-eyebrow {
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--admin-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .admin-hero-eyebrow::before { content: '—'; }
+
+    .admin-hero h1 {
+        font-family: 'Cinzel', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.3rem;
     }
 
     .admin-hero .muted {
-        color: rgba(255, 255, 255, 0.85);
-    }
-
-    .admin-section-label {
-        color: var(--admin-blue);
-        font-size: 0.95rem;
-        font-weight: 800;
-        letter-spacing: 0.02em;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.65);
     }
 
     .admin-action-btn {
-        background: linear-gradient(90deg, var(--admin-blue) 0%, var(--admin-blue-deep) 100%);
-        color: #fff;
-        box-shadow: 0 10px 20px rgba(0, 48, 135, 0.22);
-    }
-
-    .admin-action-btn:hover {
-        background: linear-gradient(90deg, var(--admin-blue-deep) 0%, #001844 100%);
-    }
-
-    .admin-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        border-radius: 9999px;
-        padding: 0.35rem 0.7rem;
-        font-size: 0.8rem;
-        font-weight: 800;
+        gap: 0.4rem;
+        background: #fff;
+        color: #09107a;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.1rem;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
     }
 
-    .admin-badge.blue {
-        background: rgba(0, 48, 135, 0.12);
-        color: var(--admin-blue);
-    }
-
-    .admin-badge.gold {
-        background: rgba(245, 184, 0, 0.18);
-        color: #7a5900;
-    }
+    .admin-action-btn:hover { background: #e8edf6; }
 
     .response-table-head {
-        background: linear-gradient(180deg, #f9fbff, #eef4ff);
-        border-bottom: 1px solid rgba(16, 35, 63, 0.08);
+        background: #f4f6fb;
+        border-bottom: 1px solid rgba(16,35,63,0.08);
     }
 
-    .response-row:hover {
-        background: #f7faff;
+    .response-row {
+        border-bottom: 1px solid #f0f2f8;
+        transition: background 0.15s;
     }
+
+    .response-row:hover { background: #f7faff; }
 
     .response-row.selected {
-        background: linear-gradient(90deg, rgba(0, 48, 135, 0.08), rgba(245, 184, 0, 0.08));
-        border-left: 4px solid var(--admin-blue);
+        background: rgba(9,16,122,0.05);
+        border-left: 3px solid #09107a;
     }
 
     .response-id {
         color: #10233f;
-        font-weight: 700;
+        font-weight: 600;
         word-break: break-all;
     }
 
-    .response-muted {
-        color: var(--admin-muted);
-    }
-
-    .response-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        border-radius: 9999px;
-        padding: 0.35rem 0.7rem;
-        font-size: 0.75rem;
-        font-weight: 800;
-        background: rgba(0, 48, 135, 0.08);
-        color: var(--admin-blue);
-    }
+    .response-muted { color: var(--admin-muted); }
 
     .response-view-btn {
-        background: linear-gradient(90deg, var(--admin-blue) 0%, var(--admin-blue-deep) 100%);
+        background: #09107a;
         color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 10px 20px rgba(0, 48, 135, 0.22);
+        border: none;
+        border-radius: 8px;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.78rem;
         font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
     }
 
-    .response-view-btn:hover {
-        background: linear-gradient(90deg, var(--admin-blue-deep) 0%, #001844 100%);
-    }
+    .response-view-btn:hover { background: #1a24d2; }
 
     .detail-panel {
-        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        background: #f8faff;
+        border-bottom: 1px solid #e8edf6;
+        padding: 1.5rem 1.75rem;
     }
 </style>
 
@@ -197,14 +202,17 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between gap-4">
                 <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-7 h-7 rounded-full opacity-90" onerror="this.style.display='none'">
-                        <h1 class="admin-heading">Tracer Study Admin</h1>
+                    <div class="flex items-center gap-2.5">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-8 h-8 rounded-full opacity-90" onerror="this.style.display='none'">
+                        <div>
+                            <h1 class="admin-heading" style="line-height:1.1;">Tracer Study Admin</h1>
+                            <p style="font-family:'Nunito Sans',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.55);letter-spacing:0.03em;margin:0;line-height:1.2;">Alumni Affairs Office</p>
+                        </div>
                     </div>
                 </div>
-                <a href="/" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
+                <a href="/" class="admin-back-btn">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Back to Site
+                    Home
                 </a>
             </div>
         </div>
@@ -226,26 +234,23 @@
 
     {{-- Main Content --}}
     <div class="max-w-7xl mx-auto px-6 py-8">
-        <div class="admin-panel p-8">
+        <div class="admin-panel overflow-hidden">
             {{-- Header --}}
-            <div class="admin-hero p-6 mb-8">
+            <div class="admin-hero mb-0">
                 <div class="flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                    <h1 class="text-3xl font-extrabold mb-2">Survey Responses</h1>
-                    <p class="muted text-sm" x-text="responses.length + ' total submission' + (responses.length !== 1 ? 's' : '')"></p>
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        <span class="admin-badge blue">Submitted records</span>
-                        <span class="admin-badge gold">Exportable CSV</span>
+                    <div>
+                        <p class="admin-hero-eyebrow">Response Records</p>
+                        <h1>Survey Responses</h1>
                     </div>
-                </div>
-                <template x-if="responses.length > 0">
-                    <a href="/admin/export-csv" class="admin-action-btn flex items-center gap-2 px-4 py-2 text-sm font-medium">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Export CSV
-                    </a>
-                </template>
+                    <template x-if="responses.length > 0">
+                        <a href="/admin/export-csv" class="admin-action-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Export CSV
+                        </a>
+                    </template>
                 </div>
             </div>
+            <div class="px-8 pb-8 pt-3">
 
             <template x-if="responses.length === 0">
                 <div class="admin-empty-state text-center py-20">
@@ -258,8 +263,7 @@
             <template x-if="responses.length > 0">
                 <div class="admin-card overflow-hidden">
                     {{-- Table Header --}}
-                    <div class="response-table-head grid grid-cols-[60px_1fr_200px_100px] gap-4 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#5a6b86]">
-                        <span>#</span>
+                    <div class="response-table-head grid grid-cols-[1fr_200px_100px] gap-4 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#5a6b86]">
                         <span>Response ID</span>
                         <button class="flex items-center gap-1 hover:text-[#003087] transition-colors" @click="sortAsc = !sortAsc">
                             Submitted
@@ -278,9 +282,8 @@
                         <div>
                             <div
                                 :class="selectedResponse === r.id ? 'response-row selected' : 'response-row'"
-                                class="grid grid-cols-[60px_1fr_200px_100px] gap-4 px-6 py-4 border-b border-slate-100 items-center"
+                                class="grid grid-cols-[1fr_200px_100px] gap-4 px-6 py-4 items-center"
                             >
-                                <span class="text-sm text-[#5a6b86] font-semibold" x-text="i + 1"></span>
                                 <span class="text-sm font-mono response-id truncate" x-text="r.id"></span>
                                 <span class="text-sm response-muted" x-text="formatDate(r.submitted_at)"></span>
                                 <div class="text-center">
@@ -336,6 +339,7 @@
                     </template>
                 </div>
             </template>
+            </div>{{-- /pt-3 --}}
         </div>
     </div>
 </div>
