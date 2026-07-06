@@ -21,6 +21,15 @@
         border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
+    /* Ensure topbar logo remains a small fixed size and not stretched */
+    .admin-topbar img {
+        width: 48px !important;
+        height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
+        object-fit: cover;
+        border-radius: 50%;
+    }
 
     .admin-heading {
         font-family: 'Cinzel', serif;
@@ -220,7 +229,7 @@
         {{-- Navigation Tabs --}}
         <div class="admin-tab-shell">
             <nav class="max-w-7xl mx-auto px-6 flex gap-1 -mb-px overflow-x-auto">
-                <a href="/admin"
+                <a href="{{ route('admin.dashboard') }}"
                    class="admin-tab-btn inactive whitespace-nowrap">
                     Dashboard
                 </a>
@@ -230,9 +239,6 @@
                 </a>
             </nav>
         </div>
-    </div>
-
-    {{-- Main Content --}}
     <div class="max-w-7xl mx-auto px-6 py-8">
         <div class="admin-panel overflow-hidden">
             {{-- Header --}}

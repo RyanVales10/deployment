@@ -12,10 +12,14 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        // Always show the admin login screen when /admin is accessed.
-        // Clear any prior admin authentication so that the user must re-enter credentials.
-        session()->forget('admin_authenticated');
-        session()->forget('admin_account_id');
+        $adminAccountId = session('admin_account_id');
+
+        if (session('admin_authenticated') === true && $adminAccountId && AdminAccount::whereKey($adminAccountId)->exists()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        session()->forget(['admin_authenticated', 'admin_account_id']);
+
         return view('admin.login');
     }
 

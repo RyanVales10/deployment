@@ -7,6 +7,8 @@ use App\Models\Draft;
 use App\Models\Response;
 use App\Models\ResponseAnswer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -37,6 +39,67 @@ class SurveyController extends Controller
             error_log('SURVEY_INDEX_EXCEPTION '.get_class($e).': '.$e->getMessage());
             throw $e;
         }
+    }
+
+    public function countries()
+    {
+        $countries = require base_path('vendor/umpirsky/country-list/data/en/country.php');
+
+        $names = collect($countries)
+            ->sortBy(fn ($name) => iconv('UTF-8', 'ASCII//TRANSLIT', $name))
+            ->values()
+            ->all();
+
+        return response()->json(['countries' => $names]);
+    }
+
+    public function psgcRegions()
+    {
+        return response()->json($this->psgcDataset('regions'));
+    }
+
+    public function psgcProvinces(string $regionCode)
+    {
+        $provinces = collect($this->psgcDataset('provinces'))
+            ->where('regionCode', $regionCode)
+            ->values()
+            ->all();
+
+        return response()->json($provinces);
+    }
+
+    public function psgcMunicipalities(string $provinceCode)
+    {
+        $municipalities = collect($this->psgcDataset('cities-municipalities'))
+            ->where('provinceCode', $provinceCode)
+            ->values()
+            ->all();
+
+        return response()->json($municipalities);
+    }
+
+    public function psgcBarangays(string $municipalityCode)
+    {
+        $barangays = Cache::remember('psgc.barangays.'.$municipalityCode, now()->addMonth(), function () use ($municipalityCode) {
+            return collect($this->psgcDataset('barangays'))
+                ->filter(fn ($barangay) => ($barangay['cityCode'] ?? null) === $municipalityCode
+                    || ($barangay['municipalityCode'] ?? null) === $municipalityCode)
+                ->values()
+                ->all();
+        });
+
+        return response()->json($barangays);
+    }
+
+    /**
+     * PSGC reference data (regions/provinces/cities-municipalities/barangays) served as
+     * static JSON files from psgc.gitlab.io. Cached for a month since PSGC codes rarely change.
+     */
+    private function psgcDataset(string $file): array
+    {
+        return Cache::remember('psgc.dataset.'.$file, now()->addMonth(), function () use ($file) {
+            return Http::get('https://psgc.gitlab.io/api/'.$file.'.json')->throw()->json();
+        });
     }
 
     private function normalizePersonalInfoBirthQuestions($categories): void

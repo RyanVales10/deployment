@@ -22,6 +22,15 @@
         border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
+    /* Ensure topbar logo remains a small fixed size and not stretched */
+    .admin-topbar img {
+        width: 48px !important;
+        height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
+        object-fit: cover;
+        border-radius: 50%;
+    }
 
     .admin-heading {
         font-family: 'Cinzel', serif;
@@ -248,17 +257,20 @@
                         </div>
                     </div>
                 </div>
-                <a href="/" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Home
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        Home
+                    </button>
+                </form>
             </div>
         </div>
 
         {{-- Navigation Tabs --}}
         <div class="admin-tab-shell">
             <nav class="max-w-7xl mx-auto px-6 flex gap-1 -mb-px overflow-x-auto">
-                <a href="/admin"
+                <a href="{{ route('admin.dashboard') }}"
                    class="admin-tab-btn active whitespace-nowrap">
                     Dashboard
                 </a>

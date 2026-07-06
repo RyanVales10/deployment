@@ -250,6 +250,22 @@
 
     .nav-btn-submit:hover { background: #1a24d2; }
     .nav-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Scrollable search dropdowns (country / PSGC location) ── */
+    .psgc-dropdown,
+    .country-dropdown {
+        max-height: 16rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #003087 #e5e7eb;
+    }
+
+    .psgc-dropdown::-webkit-scrollbar,
+    .country-dropdown::-webkit-scrollbar { width: 8px; }
+    .psgc-dropdown::-webkit-scrollbar-track,
+    .country-dropdown::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 8px; }
+    .psgc-dropdown::-webkit-scrollbar-thumb,
+    .country-dropdown::-webkit-scrollbar-thumb { background: #003087; border-radius: 8px; }
 </style>
 <div x-data="surveyApp()" x-cloak>
     {{-- ── Survey Form ── --}}
@@ -599,14 +615,14 @@
                                             </div>
                                         </template>
 
-                                        {{-- Country Select (from restcountries.com) --}}
+                                        {{-- Country Select (umpirsky/country-list) --}}
                                         <template x-if="question.type === 'country_select'">
                                             <div x-data="{
                                                 search: '',
                                                 open: false,
                                                 get filtered() {
-                                                    if (!this.search) return countries.slice(0, 80);
-                                                    return countries.filter(c => c.toLowerCase().includes(this.search.toLowerCase())).slice(0, 80);
+                                                    if (!this.search) return countries;
+                                                    return countries.filter(c => c.toLowerCase().includes(this.search.toLowerCase()));
                                                 },
                                                 select(country) {
                                                     formData[question.id] = country;
@@ -617,20 +633,12 @@
                                                 <div class="relative">
                                                     <input
                                                         type="text"
-                                                        class="w-full px-4 py-3 border border-border rounded-lg pr-10"
+                                                        class="w-full px-4 py-3 border border-border rounded-lg"
                                                         placeholder="Search for a country..."
                                                         x-model="search"
                                                         @focus="open = true"
                                                         @blur="setTimeout(() => open = false, 150)"
                                                     >
-                                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                                                        <template x-if="formData[question.id] && !open">
-                                                            <span class="text-xs text-gray-500 max-w-[160px] truncate" x-text="formData[question.id]"></span>
-                                                        </template>
-                                                        <template x-if="!formData[question.id] || open">
-                                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
-                                                        </template>
-                                                    </div>
                                                 </div>
                                                 <template x-if="formData[question.id] && !open">
                                                     <div class="mt-1 flex items-center gap-2">
@@ -640,7 +648,7 @@
                                                 </template>
                                                 <div
                                                     x-show="open && filtered.length > 0"
-                                                    class="absolute z-20 w-full bg-white border border-border rounded-lg shadow-lg mt-1 max-h-56 overflow-y-auto"
+                                                    class="country-dropdown absolute z-20 w-full bg-white border border-border rounded-lg shadow-lg mt-1"
                                                 >
                                                     <template x-for="country in filtered" :key="country">
                                                         <div
@@ -660,7 +668,7 @@
                                                 <div class="relative">
                                                     <input
                                                         type="text"
-                                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg pr-10 focus:border-[#003087] focus:outline-none transition"
+                                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#003087] focus:outline-none transition"
                                                         :placeholder="
                                                             question.type === 'province_select'     && psgc.provinces.length === 0     ? 'Select a region first...' :
                                                             question.type === 'municipality_select' && psgc.municipalities.length === 0 ? 'Select a province first...' :
@@ -675,19 +683,10 @@
                                                         @focus="psgcOpen[question.id] = true"
                                                         @blur="setTimeout(() => { psgcOpen[question.id] = false }, 150)"
                                                     >
-                                                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                                                        <template x-if="formData[question.id] && !psgcOpen[question.id]">
-                                                            <svg class="w-5 h-5 text-[#003087]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                        </template>
-                                                        <template x-if="!formData[question.id] || psgcOpen[question.id]">
-                                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 111 11a6 6 0 0116 0z"/></svg>
-                                                        </template>
-                                                    </div>
                                                 </div>
                                                 <div
                                                     x-show="psgcOpen[question.id] && getPsgcFiltered(question.id, question.type).length > 0"
-                                                    class="absolute z-40 w-full bg-white border-2 border-[#003087] rounded-lg shadow-2xl mt-2 max-h-64 overflow-y-scroll"
-                                                    style="scrollbar-width: thin; scrollbar-color: #003087 #e5e7eb;"
+                                                    class="psgc-dropdown absolute z-40 w-full bg-white border-2 border-[#003087] rounded-lg shadow-2xl mt-2"
                                                 >
                                                     <template x-for="item in getPsgcFiltered(question.id, question.type)" :key="getPsgcCode(item)">
                                                         <div
@@ -839,6 +838,14 @@ function surveyApp() {
         psgcSearch: {},
         psgcOpen: {},
 
+        parsePsgcCollection(payload) {
+            if (payload && Array.isArray(payload.data)) {
+                return payload.data;
+            }
+
+            return Array.isArray(payload) ? payload : [];
+        },
+
         init() {
             this.syncAutoCalculatedAge();
             // Prevent users from using the Back button to return to the welcome page
@@ -850,33 +857,27 @@ function surveyApp() {
             } catch (e) {
                 // ignore
             }
-            fetch('https://restcountries.com/v3.1/all?fields=name')
-                .then(r => r.json())
+            fetch('/api/countries')
+                .then(r => {
+                    if (!r.ok) {
+                        throw new Error('Countries endpoint failed with status ' + r.status);
+                    }
+                    return r.json();
+                })
                 .then(data => {
-                    console.log('Countries API response:', data);
-                    this.countries = data
-                        .map(c => c.name.common)
-                        .sort((a, b) => a.localeCompare(b));
-                    console.log('Loaded countries:', this.countries.length);
+                    this.countries = Array.isArray(data.countries) ? data.countries : [];
                 })
                 .catch(err => {
-                    console.error('Countries API failed:', err);
+                    console.error('Countries fetch failed:', err);
                 });
-            fetch('https://psgc.gitlab.io/api/regions/')
+            fetch('/api/psgc/regions')
                 .then(r => r.json())
                 .then(data => {
-                    const order = {
-                        'Region I': 1, 'Region II': 2, 'Region III': 3,
-                        'Region IV-A': 4, 'Region IV-B': 5, 'Region V': 6,
-                        'Region VI': 7, 'Region VII': 8, 'Region VIII': 9,
-                        'Region IX': 10, 'Region X': 11, 'Region XI': 12,
-                        'Region XII': 13, 'Region XIII': 14,
-                        'NCR': 15, 'CAR': 16, 'NIR': 17, 'BARMM': 18,
-                    };
-                    this.psgc.regions = (Array.isArray(data) ? data : [])
-                        .sort((a, b) => (order[a.regionName] || 99) - (order[b.regionName] || 99));
+                    this.psgc.regions = this.parsePsgcCollection(data);
                 })
-                .catch(() => {});
+                .catch(err => {
+                    console.error('Regions fetch failed:', err);
+                });
         },
 
         get totalSections() {
@@ -1025,7 +1026,7 @@ function surveyApp() {
             const s = (this.psgcSearch[questionId] || '').toLowerCase();
             const items = this.getPsgcItems(type);
             const filtered = s ? items.filter(i => this.getPsgcName(i).toLowerCase().includes(s)) : items;
-            return filtered.slice(0, 80);
+            return filtered;
         },
 
         selectPsgcItem(question, item) {
@@ -1043,37 +1044,43 @@ function surveyApp() {
                 this.psgc.provinceCode = null;
                 this.psgc.municipalityCode = null;
                 this.clearPsgcDownstream('region_select');
-                fetch('https://psgc.gitlab.io/api/regions/' + code + '/provinces/')
+                fetch('/api/psgc/regions/' + encodeURIComponent(code) + '/provinces')
                     .then(r => r.json())
                     .then(data => {
-                        this.psgc.provinces = (Array.isArray(data) ? data : [])
+                        this.psgc.provinces = this.parsePsgcCollection(data)
                             .sort((a, b) => a.name.localeCompare(b.name));
                     })
-                    .catch(() => {});
+                    .catch(err => {
+                        console.error('Provinces fetch failed:', err);
+                    });
             } else if (question.type === 'province_select') {
                 this.psgc.provinceCode = code;
                 this.psgc.municipalities = [];
                 this.psgc.barangays = [];
                 this.psgc.municipalityCode = null;
                 this.clearPsgcDownstream('province_select');
-                fetch('https://psgc.gitlab.io/api/provinces/' + code + '/cities-municipalities/')
+                fetch('/api/psgc/provinces/' + encodeURIComponent(code) + '/cities-municipalities')
                     .then(r => r.json())
                     .then(data => {
-                        this.psgc.municipalities = (Array.isArray(data) ? data : [])
+                        this.psgc.municipalities = this.parsePsgcCollection(data)
                             .sort((a, b) => a.name.localeCompare(b.name));
                     })
-                    .catch(() => {});
+                    .catch(err => {
+                        console.error('Municipalities fetch failed:', err);
+                    });
             } else if (question.type === 'municipality_select') {
                 this.psgc.municipalityCode = code;
                 this.psgc.barangays = [];
                 this.clearPsgcDownstream('municipality_select');
-                fetch('https://psgc.gitlab.io/api/cities-municipalities/' + code + '/barangays/')
+                fetch('/api/psgc/cities-municipalities/' + encodeURIComponent(code) + '/barangays')
                     .then(r => r.json())
                     .then(data => {
-                        this.psgc.barangays = (Array.isArray(data) ? data : [])
+                        this.psgc.barangays = this.parsePsgcCollection(data)
                             .sort((a, b) => a.name.localeCompare(b.name));
                     })
-                    .catch(() => {});
+                    .catch(err => {
+                        console.error('Barangays fetch failed:', err);
+                    });
             }
         },
 
