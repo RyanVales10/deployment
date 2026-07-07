@@ -418,7 +418,7 @@
                                             <p class="text-sm text-[#5a6b86]" x-text="selectedCategory.description"></p>
                                         </div>
                                         <button
-                                            @click="isEditingQuestion = true; editingQuestionId = null; questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: '', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '' }"
+                                            @click="isEditingQuestion = true; editingQuestionId = null; questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: '', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '', repeat_count_question_id: '' }"
                                             class="admin-action-btn flex items-center gap-2 px-4 py-2 text-sm"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -440,6 +440,7 @@
                                                         <option value="text">Short Text</option>
                                                         <option value="textarea">Long Text</option>
                                                         <option value="display">Display Text (No Input)</option>
+                                                        <option value="pre_selected">Pre-selected (Single Fixed Answer)</option>
                                                         <option value="radio">Single Choice (Radio)</option>
                                                         <option value="checkbox">Multiple Choice (Checkbox)</option>
                                                         <option value="select">Dropdown (Select)</option>
@@ -447,6 +448,7 @@
                                                         <option value="date">Date</option>
                                                         <option value="month">Month/Year</option>
                                                         <option value="repeating_text">Repeating Text (Dynamic List)</option>
+                                                        <option value="repeating_select">Repeating Dropdown (Dynamic List)</option>
                                                         <option value="country_select">Country Dropdown (API)</option>
                                                         <option value="region_select">Region (PSGC)</option>
                                                         <option value="province_select">Province (PSGC)</option>
@@ -478,10 +480,10 @@
 
                                                 <div>
                                                     <label class="block text-sm font-bold mb-2 text-[#10233f]">Show only if question</label>
-                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" x-model="questionForm.condition_question_id">
-                                                        <option value="">No condition</option>
+                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" @change="questionForm.condition_question_id = $event.target.value">
+                                                        <option value="" :selected="!questionForm.condition_question_id">No condition</option>
                                                         <template x-for="candidate in allQuestionsForConditions()" :key="candidate.id">
-                                                            <option :value="candidate.id" x-text="candidate.category_title + ' - ' + candidate.text"></option>
+                                                            <option :value="candidate.id" :selected="questionForm.condition_question_id === candidate.id" x-text="candidate.display_label"></option>
                                                         </template>
                                                     </select>
                                                 </div>
@@ -507,16 +509,37 @@
                                                 <p class="text-xs text-[#5a6b86]">Tip: use this to hide follow-up questions until a respondent selects a specific answer.</p>
                                             </div>
 
+                                            {{-- Repeat Count Source (how many items to render) --}}
+                                            <template x-if="['repeating_text', 'repeating_select'].includes(questionForm.type)">
+                                                <div class="p-4 bg-white border border-gray-200 rounded-xl space-y-2 shadow-sm">
+                                                    <div>
+                                                        <h3 class="text-sm font-extrabold text-[#10233f] mb-1">Repeat Count Source</h3>
+                                                        <p class="text-xs text-[#5a6b86]">Required: pick the Number question that determines how many repeated items to show. This is separate from the Visibility Rule above.</p>
+                                                    </div>
+                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" @change="questionForm.repeat_count_question_id = $event.target.value">
+                                                        <option value="" :selected="!questionForm.repeat_count_question_id">No number question selected</option>
+                                                        <template x-for="candidate in allQuestionsForConditions().filter(c => c.type === 'number')" :key="candidate.id">
+                                                            <option :value="candidate.id" :selected="questionForm.repeat_count_question_id === candidate.id" x-text="candidate.display_label"></option>
+                                                        </template>
+                                                    </select>
+                                                </div>
+                                            </template>
+
                                             {{-- Answer Options --}}
-                                            <template x-if="['radio', 'checkbox', 'select'].includes(questionForm.type)">
+                                            <template x-if="['radio', 'checkbox', 'select', 'pre_selected', 'repeating_select'].includes(questionForm.type)">
                                                 <div>
                                                     <div class="flex items-center justify-between mb-2">
-                                                        <label class="block text-sm font-bold text-[#10233f]">Answer Options</label>
-                                                        <button @click="addAnswerOption()" class="admin-action-btn flex items-center gap-1 px-2 py-1 text-xs">
-                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                                            Add Option
-                                                        </button>
+                                                        <label class="block text-sm font-bold text-[#10233f]" x-text="questionForm.type === 'pre_selected' ? 'Fixed Answer' : 'Answer Options'"></label>
+                                                        <template x-if="questionForm.type !== 'pre_selected' || questionForm.answers.length === 0">
+                                                            <button @click="addAnswerOption()" class="admin-action-btn flex items-center gap-1 px-2 py-1 text-xs">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                                                Add Option
+                                                            </button>
+                                                        </template>
                                                     </div>
+                                                    <template x-if="questionForm.type === 'pre_selected'">
+                                                        <p class="text-xs text-[#5a6b86] mb-2">Respondents will see this answer already selected, with no other choice to make.</p>
+                                                    </template>
                                                     <div class="space-y-2">
                                                         <template x-for="(answer, idx) in questionForm.answers" :key="idx">
                                                             <div class="flex items-center gap-2">
@@ -582,6 +605,12 @@
                                                             </template>
                                                             <template x-if="question.condition_question_id && question.condition_operator">
                                                                 <p class="text-xs text-[#003087] mb-2 font-semibold" x-text="conditionSummary(question)"></p>
+                                                            </template>
+                                                            <template x-if="question.repeat_count_question_id">
+                                                                <p class="text-xs text-[#8a5a00] mb-2 font-semibold" x-text="'Repeats ' + conditionQuestionText(question.repeat_count_question_id) + ' times'"></p>
+                                                            </template>
+                                                            <template x-if="['repeating_text', 'repeating_select'].includes(question.type) && !question.repeat_count_question_id">
+                                                                <p class="text-xs text-red-600 mb-2 font-semibold">No repeat count source set — this will show 0 items on the survey.</p>
                                                             </template>
                                                             <div class="flex items-center gap-2 text-xs text-[#5a6b86]">
                                                                 <span class="capitalize" x-text="question.type"></span>
@@ -759,7 +788,7 @@ function adminApp() {
 
         allQuestionsForConditions() {
             const currentQuestionId = this.editingQuestionId;
-            return this.categories.flatMap(category =>
+            const candidates = this.categories.flatMap(category =>
                 (category.questions || [])
                     .slice()
                     .sort((a, b) => a.order - b.order)
@@ -767,8 +796,28 @@ function adminApp() {
                     .map(question => ({
                         ...question,
                         category_title: category.title,
+                        base_label: category.title + ' - ' + question.text,
                     }))
             );
+
+            // Disambiguate questions that share identical text (and thus an identical
+            // label) so two different questions can never look like the same option.
+            const labelCounts = {};
+            candidates.forEach(candidate => {
+                labelCounts[candidate.base_label] = (labelCounts[candidate.base_label] || 0) + 1;
+            });
+
+            const seenCounts = {};
+            candidates.forEach(candidate => {
+                if (labelCounts[candidate.base_label] > 1) {
+                    seenCounts[candidate.base_label] = (seenCounts[candidate.base_label] || 0) + 1;
+                    candidate.display_label = `${candidate.base_label} [duplicate ${seenCounts[candidate.base_label]}/${labelCounts[candidate.base_label]}, type: ${candidate.type}]`;
+                } else {
+                    candidate.display_label = candidate.base_label;
+                }
+            });
+
+            return candidates;
         },
 
         conditionQuestionText(questionId) {
@@ -853,15 +902,18 @@ function adminApp() {
                 case 'notEquals': return actual !== undefined && actual !== '' && actual !== val;
                 case 'notEqualsStrict': return actual !== val;
                 case 'includes': {
+                    if (val === undefined || val === null) return false;
+                    const needle = String(val).trim().toLowerCase();
+
                     if (Array.isArray(actual)) {
-                        return val !== undefined && actual.includes(val);
+                        return actual.some(v => String(v ?? '').trim().toLowerCase() === needle);
                     }
 
                     if (actual === undefined || actual === null || actual === '') {
                         return false;
                     }
 
-                    return String(actual).toLowerCase().includes(String(val ?? '').toLowerCase());
+                    return String(actual).trim().toLowerCase().includes(needle);
                 }
                 case 'notEmpty': return actual !== undefined && actual !== '' && actual !== null;
                 case 'greaterThan': return Number(actual) > Number(val);
@@ -939,6 +991,7 @@ function adminApp() {
                 condition_question_id: question.condition_question_id || '',
                 condition_operator: question.condition_operator || 'notEmpty',
                 condition_value: question.condition_value || '',
+                repeat_count_question_id: question.repeat_count_question_id || '',
             };
             this.isEditingQuestion = true;
         },
@@ -961,6 +1014,7 @@ function adminApp() {
                 condition_question_id: this.questionForm.condition_question_id || null,
                 condition_operator: this.questionForm.condition_question_id ? this.questionForm.condition_operator : null,
                 condition_value: this.questionForm.condition_question_id ? this.questionForm.condition_value : null,
+                repeat_count_question_id: this.questionForm.repeat_count_question_id || null,
                 order: existingQuestion?.order ?? this.selectedCategory.questions.length + 1,
                 answers: this.questionForm.answers.map((a, i) => ({ text: a.text, order: i + 1 })),
             };
@@ -998,7 +1052,7 @@ function adminApp() {
 
             this.isEditingQuestion = false;
             this.editingQuestionId = null;
-            this.questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: 'Region XI', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '' };
+            this.questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: 'Region XI', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '', repeat_count_question_id: '' };
         },
 
         async deleteQuestion(id) {

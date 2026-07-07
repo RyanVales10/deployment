@@ -233,6 +233,7 @@ class AdminController extends Controller
             'condition_question_id' => $request->condition_question_id,
             'condition_operator' => $request->condition_operator,
             'condition_value' => $request->condition_value,
+            'repeat_count_question_id' => $request->repeat_count_question_id,
         ]);
 
         // Save answers
@@ -267,6 +268,7 @@ class AdminController extends Controller
             'condition_question_id' => $request->condition_question_id,
             'condition_operator' => $request->condition_operator,
             'condition_value' => $request->condition_value,
+            'repeat_count_question_id' => $request->repeat_count_question_id,
         ]);
 
         // Sync answers

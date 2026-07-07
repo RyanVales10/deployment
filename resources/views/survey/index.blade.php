@@ -475,6 +475,14 @@
                                             <div class="w-full px-4 py-3 border border-border rounded-lg bg-gray-50 text-gray-800" x-text="question.placeholder || 'Region XI'"></div>
                                         </template>
 
+                                        {{-- Pre-selected (single fixed answer, auto-filled, nothing to choose) --}}
+                                        <template x-if="question.type === 'pre_selected'">
+                                            <div class="flex items-center gap-2 px-4 py-3 border border-border rounded-lg bg-gray-50">
+                                                <svg class="w-4 h-4 text-[#003087] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                <span class="text-sm text-gray-800" x-text="sortedAnswers(question)[0]?.text || question.placeholder || ''"></span>
+                                            </div>
+                                        </template>
+
                                         {{-- Text input --}}
                                         <template x-if="question.type === 'text'">
                                             <input
@@ -633,19 +641,21 @@
                                                 <div class="relative">
                                                     <input
                                                         type="text"
-                                                        class="w-full px-4 py-3 border border-border rounded-lg"
+                                                        class="w-full px-4 py-3 border border-border rounded-lg pr-9"
+                                                        :class="formData[question.id] && !open ? 'font-medium text-[#003087]' : ''"
                                                         placeholder="Search for a country..."
-                                                        x-model="search"
-                                                        @focus="open = true"
+                                                        :value="open ? search : (formData[question.id] || '')"
+                                                        @input="search = $event.target.value"
+                                                        @focus="open = true; search = ''"
                                                         @blur="setTimeout(() => open = false, 150)"
                                                     >
+                                                    <button
+                                                        type="button"
+                                                        x-show="formData[question.id] && !open"
+                                                        @mousedown.prevent="formData[question.id] = null; search = ''"
+                                                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-500"
+                                                    >✕</button>
                                                 </div>
-                                                <template x-if="formData[question.id] && !open">
-                                                    <div class="mt-1 flex items-center gap-2">
-                                                        <span class="text-sm font-medium text-[#003087]" x-text="formData[question.id]"></span>
-                                                        <button type="button" @click="formData[question.id] = null; search = ''" class="text-xs text-gray-400 hover:text-red-500">✕</button>
-                                                    </div>
-                                                </template>
                                                 <div
                                                     x-show="open && filtered.length > 0"
                                                     class="country-dropdown absolute z-20 w-full bg-white border border-border rounded-lg shadow-lg mt-1"
@@ -668,7 +678,8 @@
                                                 <div class="relative">
                                                     <input
                                                         type="text"
-                                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#003087] focus:outline-none transition"
+                                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg pr-9 focus:border-[#003087] focus:outline-none transition"
+                                                        :class="formData[question.id] && !psgcOpen[question.id] ? 'font-medium text-[#003087]' : ''"
                                                         :placeholder="
                                                             question.type === 'province_select'     && psgc.provinces.length === 0     ? 'Select a region first...' :
                                                             question.type === 'municipality_select' && psgc.municipalities.length === 0 ? 'Select a province first...' :
@@ -678,11 +689,17 @@
                                                             (question.type === 'province_select'     && psgc.provinces.length === 0) ||
                                                             (question.type === 'municipality_select' && psgc.municipalities.length === 0) ||
                                                             (question.type === 'barangay_select'     && psgc.barangays.length === 0)"
-                                                        :value="formData[question.id] ? (psgcSearch[question.id] || '') : (psgcSearch[question.id] || '')"
+                                                        :value="psgcOpen[question.id] ? (psgcSearch[question.id] || '') : (formData[question.id] || psgcSearch[question.id] || '')"
                                                         @input="psgcSearch[question.id] = $event.target.value"
-                                                        @focus="psgcOpen[question.id] = true"
+                                                        @focus="psgcOpen[question.id] = true; psgcSearch[question.id] = ''"
                                                         @blur="setTimeout(() => { psgcOpen[question.id] = false }, 150)"
                                                     >
+                                                    <button
+                                                        type="button"
+                                                        x-show="formData[question.id] && !psgcOpen[question.id]"
+                                                        @mousedown.prevent="delete formData[question.id]; psgcSearch[question.id] = ''; clearPsgcDownstream(question.type)"
+                                                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-500"
+                                                    >✕</button>
                                                 </div>
                                                 <div
                                                     x-show="psgcOpen[question.id] && getPsgcFiltered(question.id, question.type).length > 0"
@@ -697,12 +714,6 @@
                                                         ></div>
                                                     </template>
                                                 </div>
-                                                <template x-if="formData[question.id] && !psgcOpen[question.id]">
-                                                    <div class="mt-2 text-sm text-gray-600 flex items-center justify-between">
-                                                        <span class="font-medium text-[#003087]" x-text="'✓ ' + formData[question.id]"></span>
-                                                        <button type="button" @click="delete formData[question.id]; psgcSearch[question.id] = ''; clearPsgcDownstream(question.type)" class="text-xs text-gray-400 hover:text-red-500 transition">Clear</button>
-                                                    </div>
-                                                </template>
                                             </div>
                                         </template>
 
@@ -719,6 +730,27 @@
                                                             :value="(formData[question.id] || [])[idx - 1] || ''"
                                                             @input="setRepeatingItem(question.id, idx - 1, $event.target.value)"
                                                         >
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        {{-- Repeating Dropdown (dynamic based on number from another question) --}}
+                                        <template x-if="question.type === 'repeating_select'">
+                                            <div class="space-y-3">
+                                                <template x-for="(idx) in getRepeatingCount(question)" :key="'repeat-' + question.id + '-' + idx">
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 mb-1" x-text="'Item ' + idx + ' of ' + getRepeatingCount(question)"></label>
+                                                        <select
+                                                            class="w-full px-4 py-3 border border-border rounded-lg"
+                                                            :value="(formData[question.id] || [])[idx - 1] || ''"
+                                                            @change="setRepeatingItem(question.id, idx - 1, $event.target.value)"
+                                                        >
+                                                            <option value="">Select an option...</option>
+                                                            <template x-for="answer in sortedAnswers(question)" :key="answer.id">
+                                                                <option :value="answer.text" x-text="answer.text" :selected="(formData[question.id] || [])[idx - 1] === answer.text"></option>
+                                                            </template>
+                                                        </select>
                                                     </div>
                                                 </template>
                                             </div>
@@ -848,6 +880,7 @@ function surveyApp() {
 
         init() {
             this.syncAutoCalculatedAge();
+            this.applyPreSelectedDefaults();
             // Prevent users from using the Back button to return to the welcome page
             try {
                 history.pushState(null, '', location.href);
@@ -898,6 +931,19 @@ function surveyApp() {
 
         sortedAnswers(question) {
             return (question.answers || []).slice().sort((a, b) => a.order - b.order);
+        },
+
+        applyPreSelectedDefaults() {
+            this.categories.forEach(category => {
+                (category.questions || []).forEach(question => {
+                    if (question.type !== 'pre_selected' || this.formData[question.id]) return;
+
+                    const answer = this.sortedAnswers(question)[0];
+                    if (answer) {
+                        this.formData[question.id] = answer.text;
+                    }
+                });
+            });
         },
 
         onRadioChange(question, value) {
@@ -1131,15 +1177,18 @@ function surveyApp() {
                 case 'notEquals': return actual !== undefined && actual !== '' && actual !== val;
                 case 'notEqualsStrict': return actual !== val;
                 case 'includes': {
+                    if (val === undefined || val === null) return false;
+                    const needle = String(val).trim().toLowerCase();
+
                     if (Array.isArray(actual)) {
-                        return val !== undefined && actual.includes(val);
+                        return actual.some(v => String(v ?? '').trim().toLowerCase() === needle);
                     }
 
                     if (actual === undefined || actual === null || actual === '') {
                         return false;
                     }
 
-                    return String(actual).toLowerCase().includes(String(val ?? '').toLowerCase());
+                    return String(actual).trim().toLowerCase().includes(needle);
                 }
                 case 'notEmpty': return actual !== undefined && actual !== '' && actual !== null;
                 case 'greaterThan': return Number(actual) > Number(val);
@@ -1197,13 +1246,15 @@ function surveyApp() {
         },
 
         getRepeatingCount(question) {
-            let sourceQuestionId = null;
+            let sourceQuestionId = question.repeat_count_question_id || null;
 
-            if (question.repeating_ref) {
+            if (!sourceQuestionId && question.repeating_ref) {
                 sourceQuestionId = this.findQuestionIdByRef(question.repeating_ref);
             }
 
             // Backward-compatible fallback: use the condition question as the count source.
+            // Only safe when the condition question is itself a number question, which is
+            // no longer guaranteed now that visibility rules can point at other question types.
             if (!sourceQuestionId && question.condition_question_id) {
                 sourceQuestionId = question.condition_question_id;
             }
@@ -1253,7 +1304,7 @@ function surveyApp() {
                     answered = Array.isArray(val) && val.length > 0;
                 } else if (question.type === 'radio' || question.type === 'select') {
                     answered = val !== undefined && val !== null && String(val).trim() !== '';
-                } else if (question.type === 'repeating_text') {
+                } else if (question.type === 'repeating_text' || question.type === 'repeating_select') {
                     const count = this.getRepeatingCount(question);
                     answered = Array.isArray(val) && val.length === count && val.every(v => (v !== null && String(v).trim() !== ''));
                 } else {
@@ -1322,6 +1373,7 @@ function surveyApp() {
                 this.formData = data.formData;
                 this.currentSection = data.currentSection;
                 this.syncAutoCalculatedAge();
+                this.applyPreSelectedDefaults();
                 this.showResumeDialog = false;
                 this.resumeInput = '';
                 this.resumeError = '';

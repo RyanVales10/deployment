@@ -14,7 +14,7 @@ class Question extends Model
     protected $fillable = [
         'category_id', 'text', 'type', 'required', 'placeholder',
         'help_text', 'order', 'condition_question_id',
-        'condition_operator', 'condition_value',
+        'condition_operator', 'condition_value', 'repeat_count_question_id',
     ];
 
     protected $casts = [
