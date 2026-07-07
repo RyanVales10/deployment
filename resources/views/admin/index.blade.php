@@ -630,11 +630,19 @@
 
                     <div class="space-y-8">
                         <template x-for="(category, catIndex) in previewCategories" :key="category.id">
-                            <div class="admin-card p-6">
-                                <div class="mb-6">
-                                    <h3 class="text-xl font-extrabold mb-1 text-[#003087]" x-text="'Section ' + (catIndex + 1) + ': ' + category.title"></h3>
-                                    <p class="text-sm text-[#5a6b86]" x-text="category.description"></p>
+                            <div class="admin-card overflow-hidden">
+                                <div class="mb-6" style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0;padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
+                                    <div>
+                                        <p style="font-family:'Nunito Sans',sans-serif;font-size:0.73rem;font-weight:700;color:#f5b800;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 0.35rem;display:flex;align-items:center;gap:0.5rem;">
+                                            <span style="display:inline-block;width:16px;height:2px;background:#f5b800;border-radius:1px;flex-shrink:0;"></span>
+                                            <span x-text="'Section ' + (catIndex + 1) + ' of ' + previewCategories.length"></span>
+                                        </p>
+                                        <h3 style="font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.35rem;" x-text="category.title.toUpperCase()"></h3>
+                                        <p style="font-family:'Nunito Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.6);margin:0;" x-text="category.description"></p>
+                                    </div>
+                                    <div style="font-family:'Cinzel',serif;font-size:4rem;font-weight:800;color:rgba(255,255,255,0.1);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(catIndex + 1).padStart(2,'0')"></div>
                                 </div>
+                                <div class="p-6">
                                 <div class="space-y-6">
                                     <template x-for="question in visiblePreviewQuestions(category)" :key="question.id">
                                         <div class="question-card p-4">
@@ -711,6 +719,7 @@
                                         </div>
                                     </template>
                                 </div>
+                                </div>{{-- /p-6 --}}
                             </div>
                         </template>
                     </div>
