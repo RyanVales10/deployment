@@ -157,24 +157,12 @@
     }
 
     .section-hero {
-        background: #ffffff;
-        border: 1px solid #e1e7f0;
+        background: linear-gradient(135deg, #09107a 0%, #1a24d2 100%);
         border-radius: 14px;
-        padding: 1.2rem 1rem;
-        box-shadow: 0 8px 18px rgba(15, 42, 84, 0.08);
-    }
-
-    .section-chip {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(140deg, #0e4fb6 0%, #7d95c7 100%);
-        color: #fff;
-        font-weight: 700;
-        box-shadow: 0 4px 14px rgba(14, 79, 182, 0.35);
+        padding: 1.75rem 2rem;
+        box-shadow: 0 8px 24px rgba(9, 16, 122, 0.28);
+        position: relative;
+        overflow: hidden;
     }
 
     .question-card {
@@ -286,9 +274,9 @@
                     {{-- Progress bar --}}
                     <div class="survey-progress-wrap">
                         <div class="survey-progress-track">
-                            <div class="survey-progress-fill" :style="{ width: Math.round(currentSection / totalSections * 100) + '%' }"></div>
+                            <div class="survey-progress-fill" :style="{ width: answeredProgress + '%' }"></div>
                         </div>
-                        <span class="survey-progress-pct" x-text="Math.round(currentSection / totalSections * 100) + '%'"></span>
+                        <span class="survey-progress-pct" x-text="answeredProgress + '%'"></span>
                     </div>
 
                     {{-- Buttons --}}
@@ -440,12 +428,20 @@
 
                             {{-- Section Header --}}
                             <div class="section-hero">
-                                <div class="flex items-start gap-3">
-                                    <span class="section-chip" x-text="currentSection"></span>
+                                <div style="display:flex;align-items:center;justify-content:space-between;">
                                     <div>
-                                        <h2 class="mb-2 text-3xl font-extrabold text-[#11243f]" x-text="'SECTION ' + currentSection + ': ' + currentCategory.title.toUpperCase()"></h2>
-                                        <p class="text-[#586a84]" x-text="currentCategory.description"></p>
+                                        <p style="font-family:'Nunito Sans',sans-serif;font-size:0.85rem;font-weight:700;color:#f5b800;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 0.45rem;display:flex;align-items:center;gap:0.5rem;">
+                                            <span style="display:inline-block;width:16px;height:2px;background:#f5b800;border-radius:1px;flex-shrink:0;"></span>
+                                            <span x-text="'Section ' + currentSection + ' of ' + totalSections"></span>
+                                        </p>
+                                        <h2 style="font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.75rem;" x-text="currentCategory.title.toUpperCase()"></h2>
+                                        <template x-if="currentCategory.description">
+                                            <div style="background:rgba(255,255,255,0.1);border-radius:6px;padding:0.6rem 0.85rem;">
+                                                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.6;margin:0;" x-text="currentCategory.description"></p>
+                                            </div>
+                                        </template>
                                     </div>
+                                    <div style="font-family:'Cinzel',serif;font-size:4.5rem;font-weight:800;color:rgba(255,255,255,0.1);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(currentSection).padStart(2,'0')"></div>
                                 </div>
                             </div>
 
@@ -804,33 +800,61 @@
             </div>
         </div>
 
+    {{-- Alert Modal --}}
+    <div
+        x-show="showAlertModal"
+        x-cloak
+        style="position:fixed;inset:0;z-index:1000;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
+    >
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
+            {{-- Header --}}
+            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+                <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0;" x-text="alertModalTitle"></h3>
+                <svg width="32" height="32" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            </div>
+            {{-- Body --}}
+            <div style="padding:1rem 2rem 1.75rem;">
+                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#10233f;line-height:1.7;margin:0 0 1rem;" x-text="alertModalMessage"></p>
+                <template x-if="alertModalItems.length > 0">
+                    <ul style="margin:0 0 1.5rem;padding:0;list-style:none;">
+                        <template x-for="item in alertModalItems" :key="item">
+                            <li style="font-family:'Nunito Sans',sans-serif;font-size:0.9rem;color:#10233f;padding:0.45rem 0.9rem;border-left:3px solid #f5b800;margin-bottom:0.5rem;border-radius:0 6px 6px 0;background:#fffbf0;" x-text="item"></li>
+                        </template>
+                    </ul>
+                </template>
+                <button @click="showAlertModal = false" style="width:100%;padding:0.85rem 1rem;background:#09107a;color:#fff;border:none;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">Got it</button>
+            </div>
+        </div>
+    </div>
+
     {{-- Submission Success Modal --}}
     <div
         x-show="showSuccessModal"
         x-cloak
-        style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
+        style="position:fixed;inset:0;z-index:999;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
     >
-        <div style="background:#fff;border-radius:18px;max-width:500px;width:100%;box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:680px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
             {{-- Modal top bar --}}
-            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.75rem 2rem 1.5rem;">
-                <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
-                    <svg width="24" height="24" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:2.25rem 2.5rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <h2 style="font-family:'Cinzel',serif;font-size:1.9rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.1rem;">Survey Submitted!</h2>
+                    <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:rgba(255,255,255,0.65);margin:0;">Ateneo Graduate Tracer Study</p>
                 </div>
-                <h2 style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.3rem;">Survey Submitted!</h2>
-                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.65);margin:0;">Ateneo Graduate Tracer Study</p>
+                <div style="width:64px;height:64px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="34" height="34" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
             </div>
             {{-- Modal body --}}
-            <div style="padding:1.75rem 2rem;">
-                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#10233f;line-height:1.7;margin:0 0 1rem;">
+            <div style="padding:2.25rem 2.5rem;">
+                <p style="font-family:'Nunito Sans',sans-serif;font-size:1rem;color:#10233f;line-height:1.75;margin:0 0 1.25rem;">
                     Thank you for completing the <strong>Graduate Tracer Survey!</strong> Your valuable responses will help us improve our academic programs and services.
                 </p>
-                <div style="background:#f0f4ff;border-left:3px solid #c9a227;border-radius:0 8px 8px 0;padding:0.85rem 1rem;margin-bottom:1.5rem;">
-                    <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:#2a3a6b;line-height:1.65;margin:0;">
+                <div style="background:#fffbf0;border:1.5px solid #f5b800;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.75rem;">
+                    <p style="font-family:'Nunito Sans',sans-serif;font-size:0.93rem;color:#10233f;line-height:1.7;margin:0;">
                         As a token of appreciation for your time and effort, you are entitled to participate in the <strong>raffle</strong> for a chance to win an <strong>official AdDU polo shirt!</strong>
                     </p>
                 </div>
-                <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.75rem 1rem;background:#09107a;color:#fff;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <a href="/" style="display:flex;align-items:center;justify-content:center;width:100%;padding:0.9rem 1rem;background:#09107a;color:#fff;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.95rem;font-weight:700;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">
                     Back to Home
                 </a>
             </div>
@@ -856,6 +880,10 @@ function surveyApp() {
         saving: false,
         showSavedBanner: false,
         showSuccessModal: false,
+        showAlertModal: false,
+        alertModalTitle: '',
+        alertModalMessage: '',
+        alertModalItems: [],
         showLogin: {{ ($errors->has('email') || $errors->has('password') || session('show_login_modal')) ? 'true' : 'false' }},
         countries: [],
         psgc: {
@@ -915,6 +943,32 @@ function surveyApp() {
 
         get totalSections() {
             return this.categories.length;
+        },
+
+        get totalQuestionsCount() {
+            let total = 0;
+            this.categories.forEach(cat => {
+                (cat.questions || []).forEach(q => { if (q.type !== 'display') total++; });
+            });
+            return total;
+        },
+
+        get answeredQuestionsCount() {
+            let answered = 0;
+            this.categories.forEach(cat => {
+                (cat.questions || []).forEach(q => {
+                    if (q.type !== 'display') {
+                        const v = this.formData[q.id];
+                        if (v !== undefined && v !== null && v !== '') answered++;
+                    }
+                });
+            });
+            return answered;
+        },
+
+        get answeredProgress() {
+            if (this.totalQuestionsCount === 0) return 0;
+            return Math.round(this.answeredQuestionsCount / this.totalQuestionsCount * 100);
         },
 
         get currentCategory() {
@@ -1317,7 +1371,7 @@ function surveyApp() {
             }
 
             if (missing.length > 0) {
-                alert('Please answer the required questions before continuing:\n\n' + missing.map(m => '- ' + m).join('\n'));
+                this.showAlert('Missing Questions', 'Please answer the required questions before continuing:', missing);
                 return;
             }
 
@@ -1346,7 +1400,7 @@ function surveyApp() {
                 this.resumeCode = data.code;
                 this.showSavedBanner = true;
             } catch {
-                alert('An error occurred while saving. Please try again.');
+                this.showAlert('Save Error', 'An error occurred while saving. Please try again.');
             } finally {
                 this.saving = false;
             }
@@ -1385,8 +1439,15 @@ function surveyApp() {
         copyCode() {
             if (this.resumeCode) {
                 navigator.clipboard.writeText(this.resumeCode);
-                alert('Resume code copied to clipboard!');
+                this.showAlert('Copied!', 'Resume code copied to clipboard.');
             }
+        },
+
+        showAlert(title, message, items = []) {
+            this.alertModalTitle = title;
+            this.alertModalMessage = message;
+            this.alertModalItems = items;
+            this.showAlertModal = true;
         },
 
         async submitSurvey() {
@@ -1411,10 +1472,10 @@ function surveyApp() {
                     this.existingResponseId = null;
                     this.showSuccessModal = true;
                 } else {
-                    alert('Failed to submit. Please try again.');
+                    this.showAlert('Submit Failed', 'Failed to submit. Please try again.');
                 }
             } catch {
-                alert('An error occurred. Please try again.');
+                this.showAlert('Error', 'An error occurred. Please try again.');
             } finally {
                 this.saving = false;
             }
@@ -1440,8 +1501,8 @@ function surveyApp() {
     height: 100%;
     border-radius: inherit;
     transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
-    background: linear-gradient(90deg, #0f4ab7 0%, #003087 55%, #2457ba 100%);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15) inset, 0 2px 10px rgba(0, 48, 135, 0.35);
+    background: linear-gradient(90deg, #f5b800 0%, #e0a800 55%, #f5b800 100%);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15) inset, 0 2px 10px rgba(245, 184, 0, 0.35);
 }
 
 .survey-progress-fill::after {
