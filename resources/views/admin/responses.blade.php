@@ -21,14 +21,15 @@
         border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
-    /* Ensure topbar logo remains a small fixed size and not stretched */
-    .admin-topbar img {
-        width: 48px !important;
-        height: 48px !important;
-        max-width: 48px !important;
-        max-height: 48px !important;
-        object-fit: cover;
+    .admin-topbar-seal {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px;
+        max-width: 32px !important;
+        max-height: 32px !important;
         border-radius: 50%;
+        object-fit: contain;
+        opacity: 0.9;
     }
 
     .admin-heading {
@@ -212,7 +213,7 @@
             <div class="flex items-center justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-2.5">
-                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-8 h-8 rounded-full opacity-90" onerror="this.style.display='none'">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="admin-topbar-seal" onerror="this.style.display='none'">
                         <div>
                             <h1 class="admin-heading" style="line-height:1.1;">Tracer Study Admin</h1>
                             <p style="font-family:'Nunito Sans',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.55);letter-spacing:0.03em;margin:0;line-height:1.2;">Alumni Affairs Office</p>
@@ -239,6 +240,8 @@
                 </a>
             </nav>
         </div>
+    </div>{{-- /admin-topbar --}}
+
     <div class="max-w-7xl mx-auto px-6 py-8">
         <div class="admin-panel overflow-hidden">
             {{-- Header --}}
@@ -271,7 +274,7 @@
                     {{-- Table Header --}}
                     <div class="response-table-head grid grid-cols-[1fr_200px_100px] gap-4 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#5a6b86]">
                         <span>Response ID</span>
-                        <button class="flex items-center gap-1 hover:text-[#003087] transition-colors" @click="sortAsc = !sortAsc">
+                        <button class="flex items-center gap-1 hover:text-[#003087] transition-colors text-xs font-semibold uppercase tracking-wider text-[#5a6b86]" style="font-family:'Nunito Sans',sans-serif;background:none;border:none;cursor:pointer;padding:0;letter-spacing:inherit;" @click="sortAsc = !sortAsc">
                             Submitted
                             <template x-if="sortAsc">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>

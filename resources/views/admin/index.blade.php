@@ -22,15 +22,17 @@
         border-bottom: none;
         box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
-    /* Ensure topbar logo remains a small fixed size and not stretched */
-    .admin-topbar img {
-        width: 48px !important;
-        height: 48px !important;
-        max-width: 48px !important;
-        max-height: 48px !important;
-        object-fit: cover;
+
+    .admin-topbar-seal {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px;
+        max-width: 32px;
         border-radius: 50%;
+        object-fit: contain;
+        opacity: 0.9;
     }
+    /* Ensure topbar logo remains a small fixed size and not stretched */
 
     .admin-heading {
         font-family: 'Cinzel', serif;
@@ -250,7 +252,7 @@
             <div class="flex items-center justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-2.5">
-                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="w-8 h-8 rounded-full opacity-90" onerror="this.style.display='none'">
+                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="admin-topbar-seal" onerror="this.style.display='none'">
                         <div>
                             <h1 class="admin-heading" style="line-height:1.1;">Tracer Study Admin</h1>
                             <p style="font-family:'Nunito Sans',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.55);letter-spacing:0.03em;margin:0;line-height:1.2;">Alumni Affairs Office</p>
@@ -601,7 +603,7 @@
                                                                 </template>
                                                             </div>
                                                             <template x-if="question.help_text">
-                                                                <p class="text-xs text-[#5a6b86] mb-2" x-text="question.help_text"></p>
+                                                                <p class="text-sm text-[#5a6b86] mb-2" x-text="question.help_text"></p>
                                                             </template>
                                                             <template x-if="question.condition_question_id && question.condition_operator">
                                                                 <p class="text-xs text-[#003087] mb-2 font-semibold" x-text="conditionSummary(question)"></p>
@@ -653,9 +655,9 @@
             {{-- Preview Tab --}}
             <template x-if="activeTab === 'preview'">
                 <div>
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-extrabold mb-2 text-[#10233f]">Survey Preview</h2>
-                        <p class="text-sm text-[#5a6b86]">This is how the survey will appear to respondents</p>
+                    <div class="mb-5">
+                        <h2 class="text-2xl font-extrabold text-[#10233f]" style="margin-bottom:0.35rem;">Survey Preview</h2>
+                        <p style="font-size:0.9rem;font-weight:500;color:#8a99b8;font-family:'Nunito Sans',sans-serif;margin-bottom:0;">(This is how the survey will appear to respondents)</p>
                     </div>
 
                     <template x-if="previewCategories.length === 0">
@@ -664,11 +666,6 @@
                             <p class="font-semibold text-[#10233f]">No categories or questions to preview</p>
                         </div>
                     </template>
-
-                    <div class="mb-4 text-sm text-[#5a6b86]">
-                        <span x-text="previewTotalQuestions"></span>
-                        <span>questions currently visible in the form preview</span>
-                    </div>
 
                     <div class="space-y-8">
                         <template x-for="(category, catIndex) in previewCategories" :key="category.id">
@@ -680,20 +677,20 @@
                                             <span x-text="'Section ' + (catIndex + 1) + ' of ' + previewCategories.length"></span>
                                         </p>
                                         <h3 style="font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.35rem;" x-text="category.title.toUpperCase()"></h3>
-                                        <p style="font-family:'Nunito Sans',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.6);margin:0;" x-text="category.description"></p>
+                                        <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:rgba(255,255,255,0.8);margin:0;line-height:1.65;" x-text="category.description"></p>
                                     </div>
-                                    <div style="font-family:'Cinzel',serif;font-size:4rem;font-weight:800;color:rgba(255,255,255,0.1);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(catIndex + 1).padStart(2,'0')"></div>
+                                    <div style="font-family:'Cinzel',serif;font-size:4rem;font-weight:800;color:rgba(255,255,255,0.25);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(catIndex + 1).padStart(2,'0')"></div>
                                 </div>
                                 <div class="p-6">
                                 <div class="space-y-6">
                                     <template x-for="question in visiblePreviewQuestions(category)" :key="question.id">
                                         <div class="question-card p-4">
-                                            <label class="block text-base font-semibold mb-2 text-[#10233f]">
+                                            <label class="block text-lg font-semibold mb-2 text-[#10233f]">
                                                 <span x-text="question.text"></span>
                                                 <template x-if="question.required && question.type !== 'display'"><span class="text-red-600 ml-1">*</span></template>
                                             </label>
                                             <template x-if="question.help_text">
-                                                <p class="text-xs text-[#5a6b86] mb-2" x-text="question.help_text"></p>
+                                                <p class="text-sm text-[#5a6b86] mb-2" x-text="question.help_text"></p>
                                             </template>
 
                                             <template x-if="question.type === 'display'">

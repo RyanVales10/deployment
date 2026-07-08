@@ -169,8 +169,40 @@
         background: #ffffff;
         border: 1px solid #dde5f1;
         border-radius: 12px;
-        padding: 1rem;
+        padding: 1.25rem 1.5rem;
         box-shadow: 0 6px 14px rgba(15, 42, 84, 0.07);
+    }
+
+    .survey-footer-bar {
+        background: #09107a;
+        padding: 0.85rem 2.5rem;
+    }
+
+    .survey-footer-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .survey-footer-brand {
+        font-family: 'Cinzel', serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    .survey-footer-tagline {
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
     }
 
     .nav-footer {
@@ -436,12 +468,10 @@
                                         </p>
                                         <h2 style="font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.75rem;" x-text="currentCategory.title.toUpperCase()"></h2>
                                         <template x-if="currentCategory.description">
-                                            <div style="background:rgba(255,255,255,0.1);border-radius:6px;padding:0.6rem 0.85rem;">
-                                                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.6;margin:0;" x-text="currentCategory.description"></p>
-                                            </div>
+                                            <p style="font-family:'Nunito Sans',sans-serif;font-size:1rem;color:rgba(255,255,255,0.8);line-height:1.65;margin:0;" x-text="currentCategory.description"></p>
                                         </template>
                                     </div>
-                                    <div style="font-family:'Cinzel',serif;font-size:4.5rem;font-weight:800;color:rgba(255,255,255,0.1);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(currentSection).padStart(2,'0')"></div>
+                                    <div style="font-family:'Cinzel',serif;font-size:4.5rem;font-weight:800;color:rgba(255,255,255,0.25);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(currentSection).padStart(2,'0')"></div>
                                 </div>
                             </div>
 
@@ -456,14 +486,14 @@
                             <div class="space-y-6">
                                 <template x-for="question in visibleQuestions" :key="question.id">
                                     <div class="question-card space-y-2">
-                                        <label class="block text-base font-semibold text-[#11243f]">
+                                        <label class="block text-lg font-semibold text-[#11243f]">
                                             <span x-text="question.text"></span>
                                             <template x-if="question.required && question.type !== 'display'">
                                                 <span class="text-red-600 ml-1">*</span>
                                             </template>
                                         </label>
                                         <template x-if="question.help_text">
-                                            <p class="text-xs text-[#6b7b94]" x-text="question.help_text"></p>
+                                            <p class="text-sm text-[#6b7b94]" x-text="question.help_text"></p>
                                         </template>
 
                                         {{-- Display-only text --}}
@@ -800,11 +830,19 @@
             </div>
         </div>
 
+        {{-- Footer Bar --}}
+        <footer class="survey-footer-bar">
+            <div class="survey-footer-inner">
+                <span class="survey-footer-brand">Ateneo Graduate Tracer Study</span>
+                <span class="survey-footer-tagline">Strong in Faith That Does Justice</span>
+            </div>
+        </footer>
+
     {{-- Alert Modal --}}
     <div
         x-show="showAlertModal"
         x-cloak
-        style="position:fixed;inset:0;z-index:1000;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
+        style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);"
     >
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
             {{-- Header --}}
@@ -831,7 +869,7 @@
     <div
         x-show="showSuccessModal"
         x-cloak
-        style="position:fixed;inset:0;z-index:999;background:rgba(9,16,122,0.55);backdrop-filter:blur(4px);"
+        style="position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);"
     >
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:680px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
             {{-- Modal top bar --}}
