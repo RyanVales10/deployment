@@ -275,24 +275,23 @@
 
     {{-- Hero --}}
     <div class="dev-hero">
-        <div class="dev-eyebrow">
+        <h2>The Minds Behind the Innovation</h2>
+        <div class="dev-eyebrow" style="margin-top:0.75rem;margin-bottom:0;">
             <span class="dev-eyebrow-diamond"></span>
-            Alumni Affairs Office
+            The team behind the AdDU Graduate Tracer Study platform
             <span class="dev-eyebrow-diamond"></span>
         </div>
-        <h2>Meet the Developers</h2>
-        <p>The team behind the AdDU Graduate Tracer Study platform.</p>
     </div>
 
     {{-- Cards --}}
     <div class="dev-grid">
         @php
         $developers = [
-            ['name' => 'Oneil Victoriano',     'role' => 'Project Lead'],
-            ['name' => 'Justin Ryan Vales',     'role' => 'Software Engineer'],
-            ['name' => 'Andrew Jacob Lomanta',  'role' => 'Software Engineer'],
-            ['name' => 'Jon Bautista',          'role' => 'Systems & Data Analyst'],
-            ['name' => 'Novie Joy Pelobello',   'role' => 'Systems & Data Analyst'],
+            ['name' => 'Oneil V.',    'role' => 'Project Lead'],
+            ['name' => 'Justin RV',   'role' => 'Software Engineer'],
+            ['name' => 'Andrew JL',   'role' => 'Software Engineer'],
+            ['name' => 'Jon B',       'role' => 'Systems & Data Analyst'],
+            ['name' => 'Novie JP',    'role' => 'Systems & Data Analyst'],
         ];
         @endphp
 

@@ -1183,7 +1183,7 @@
             <span class="footer-brand-title">Ateneo Graduate Tracer Study</span>
             <span class="footer-tagline">Strong in Faith That Does Justice</span>
         </div>
-        <a href="/developers" class="footer-tagline" style="position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);text-decoration:none;color:rgba(255,255,255,0.45);transition:color 0.15s;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Meet the Developers</a>
+        <a href="/developers" style="position:absolute;right:2.5rem;top:55%;transform:translateY(-50%);text-decoration:none;font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);transition:color 0.15s;white-space:nowrap;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">The Minds Behind the Innovation</a>
     </footer>
 
     {{-- ── PRIVACY MODAL ── --}}
