@@ -544,8 +544,16 @@
                                                     </template>
                                                     <div class="space-y-2">
                                                         <template x-for="(answer, idx) in questionForm.answers" :key="idx">
-                                                            <div class="flex items-center gap-2">
-                                                                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                                            <div
+                                                                class="flex items-center gap-2"
+                                                                :class="draggedAnswerIndex === idx ? 'opacity-50' : ''"
+                                                                draggable="true"
+                                                                @dragstart="onAnswerDragStart(idx)"
+                                                                @dragover.prevent
+                                                                @drop="onAnswerDrop(idx)"
+                                                                @dragend="draggedAnswerIndex = null"
+                                                            >
+                                                                <svg class="w-4 h-4 text-gray-400 flex-shrink-0 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                                                                 <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" placeholder="Answer option text" x-model="answer.text">
                                                                 <button @click="questionForm.answers.splice(idx, 1)" class="admin-danger-btn p-2 rounded-lg transition-colors">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -571,7 +579,7 @@
                                 </div>
 
                                 {{-- Questions List --}}
-                                <div class="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
+                                <div class="divide-y divide-slate-200 max-h-[600px] overflow-y-auto" x-ref="questionsListContainer" @dragover="autoScrollDuringDrag($event)">
                                     <template x-if="selectedCategory.questions.length === 0">
                                         <div class="admin-empty-state p-8 text-center">
                                             <svg class="w-12 h-12 mx-auto mb-3 opacity-30 text-[#003087]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -585,7 +593,7 @@
                                             :class="draggedQuestionId === question.id ? 'opacity-50' : ''"
                                             draggable="true"
                                             @dragstart="onQuestionDragStart(question.id)"
-                                            @dragover.prevent
+                                            @dragover.prevent="autoScrollDuringDrag($event)"
                                             @drop="onQuestionDrop(question.id)"
                                             @dragend="draggedQuestionId = null"
                                             title="Drag to reorder"
@@ -787,6 +795,7 @@ function adminApp() {
         editingQuestionId: null,
         questionForm: { text: '', type: 'text', required: false, answers: [], placeholder: '', help_text: '' },
             draggedQuestionId: null,
+            draggedAnswerIndex: null,
 
         get totalQuestions() {
             return this.categories.reduce((t, c) => t + c.questions.length, 0);
@@ -985,6 +994,24 @@ function adminApp() {
             this.questionForm.answers.push({ text: '', order: this.questionForm.answers.length + 1 });
         },
 
+        onAnswerDragStart(index) {
+            this.draggedAnswerIndex = index;
+        },
+
+        onAnswerDrop(targetIndex) {
+            if (this.draggedAnswerIndex === null || this.draggedAnswerIndex === targetIndex) {
+                this.draggedAnswerIndex = null;
+                return;
+            }
+
+            const answers = this.questionForm.answers;
+            const [moved] = answers.splice(this.draggedAnswerIndex, 1);
+            answers.splice(targetIndex, 0, moved);
+
+            this.questionForm.answers = answers.map((answer, idx) => ({ ...answer, order: idx + 1 }));
+            this.draggedAnswerIndex = null;
+        },
+
         editQuestion(question) {
             this.editingQuestionId = question.id;
             this.questionForm = {
@@ -1078,6 +1105,22 @@ function adminApp() {
 
         onQuestionDragStart(questionId) {
             this.draggedQuestionId = questionId;
+        },
+
+        autoScrollDuringDrag($event) {
+            const container = this.$refs.questionsListContainer;
+            if (!container) return;
+
+            const rect = container.getBoundingClientRect();
+            const edge = 80;
+            const distanceFromTop = $event.clientY - rect.top;
+            const distanceFromBottom = rect.bottom - $event.clientY;
+
+            if (distanceFromTop < edge) {
+                container.scrollTop -= (edge - Math.max(distanceFromTop, 0)) / 2;
+            } else if (distanceFromBottom < edge) {
+                container.scrollTop += (edge - Math.max(distanceFromBottom, 0)) / 2;
+            }
         },
 
         async onQuestionDrop(targetQuestionId) {
