@@ -844,22 +844,25 @@
         x-cloak
         style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);"
     >
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);max-height:85vh;box-shadow:0 32px 64px rgba(9,16,122,0.28);display:flex;flex-direction:column;overflow:hidden;">
             {{-- Header --}}
-            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
                 <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0;" x-text="alertModalTitle"></h3>
                 <svg width="32" height="32" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
             </div>
-            {{-- Body --}}
-            <div style="padding:1rem 2rem 1.75rem;">
+            {{-- Scrollable Body --}}
+            <div style="padding:1rem 2rem 0;overflow-y:auto;flex:1;">
                 <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#10233f;line-height:1.7;margin:0 0 1rem;" x-text="alertModalMessage"></p>
                 <template x-if="alertModalItems.length > 0">
-                    <ul style="margin:0 0 1.5rem;padding:0;list-style:none;">
+                    <ul style="margin:0;padding:0;list-style:none;">
                         <template x-for="item in alertModalItems" :key="item">
                             <li style="font-family:'Nunito Sans',sans-serif;font-size:0.9rem;color:#10233f;padding:0.45rem 0.9rem;border-left:3px solid #f5b800;margin-bottom:0.5rem;border-radius:0 6px 6px 0;background:#fffbf0;" x-text="item"></li>
                         </template>
                     </ul>
                 </template>
+            </div>
+            {{-- Sticky Button --}}
+            <div style="padding:1.25rem 2rem;flex-shrink:0;">
                 <button @click="showAlertModal = false" style="width:100%;padding:0.85rem 1rem;background:#09107a;color:#fff;border:none;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">Got it</button>
             </div>
         </div>
