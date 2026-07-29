@@ -496,11 +496,6 @@
                                             <p class="text-sm text-[#6b7b94]" x-text="question.help_text"></p>
                                         </template>
 
-                                        {{-- Display-only text --}}
-                                        <template x-if="question.type === 'display'">
-                                            <div class="w-full px-4 py-3 border border-border rounded-lg bg-gray-50 text-gray-800" x-text="question.placeholder || 'Region XI'"></div>
-                                        </template>
-
                                         {{-- Pre-selected (single fixed answer, auto-filled, nothing to choose) --}}
                                         <template x-if="question.type === 'pre_selected'">
                                             <div class="flex items-center gap-2 px-4 py-3 border border-border rounded-lg bg-gray-50">
@@ -908,6 +903,7 @@ function surveyApp() {
         categories: categories.sort((a, b) => a.order - b.order),
         currentSection: 1,
         formData: {},
+        _pruningConditionalAnswers: false,
         respondentEmail: null,
         isEditMode: false,
         existingResponseId: null,
@@ -947,6 +943,15 @@ function surveyApp() {
         init() {
             this.syncAutoCalculatedAge();
             this.applyPreSelectedDefaults();
+            // Whenever any answer changes, drop answers previously entered on questions
+            // whose "Show only if" condition is no longer met (e.g. respondent picked
+            // "Never married" after already filling in "Month of first marriage").
+            this.$watch('formData', () => {
+                if (this._pruningConditionalAnswers) return;
+                this._pruningConditionalAnswers = true;
+                this.pruneStaleConditionalAnswers();
+                this._pruningConditionalAnswers = false;
+            });
             // Prevent users from using the Back button to return to the welcome page
             try {
                 history.pushState(null, '', location.href);
@@ -1018,7 +1023,7 @@ function surveyApp() {
             return this.currentCategory.questions
                 .slice()
                 .sort((a, b) => a.order - b.order)
-                .filter(q => this.isConditionMet(q));
+                .filter(q => q.type !== 'pre_selected' && this.isConditionMet(q));
         },
 
         sortedAnswers(question) {
@@ -1285,6 +1290,29 @@ function surveyApp() {
                 case 'notEmpty': return actual !== undefined && actual !== '' && actual !== null;
                 case 'greaterThan': return Number(actual) > Number(val);
                 default: return true;
+            }
+        },
+
+        pruneStaleConditionalAnswers() {
+            const allQuestions = this.categories.flatMap(cat => cat.questions || []);
+            let changed = true;
+            let guard = 0;
+
+            while (changed && guard < 10) {
+                changed = false;
+                guard += 1;
+
+                for (const question of allQuestions) {
+                    if (!question.condition_question_id) continue;
+
+                    const val = this.formData[question.id];
+                    const hasAnswer = Array.isArray(val) ? val.length > 0 : (val !== undefined && val !== null && val !== '');
+
+                    if (hasAnswer && !this.isConditionMet(question)) {
+                        delete this.formData[question.id];
+                        changed = true;
+                    }
+                }
             }
         },
 

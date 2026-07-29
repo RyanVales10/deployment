@@ -243,6 +243,18 @@
         background: rgba(245, 184, 0, 0.18);
         color: #7a5900;
     }
+
+    /* ── Scrollable answer options list ── */
+    .answer-options-list {
+        max-height: 18rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #003087 #e5e7eb;
+    }
+
+    .answer-options-list::-webkit-scrollbar { width: 8px; }
+    .answer-options-list::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 8px; }
+    .answer-options-list::-webkit-scrollbar-thumb { background: #003087; border-radius: 8px; }
 </style>
 
 <div class="admin-shell" x-data="adminApp()" x-cloak>
@@ -465,10 +477,12 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <label class="block text-sm font-bold mb-2 text-[#10233f]" x-text="questionForm.type === 'display' ? 'Display Text' : 'Placeholder Text (optional)'"></label>
-                                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" :placeholder="questionForm.type === 'display' ? 'e.g. Region XI' : 'e.g. Enter your answer here...'" x-model="questionForm.placeholder">
-                                            </div>
+                                            <template x-if="questionForm.type !== 'display'">
+                                                <div>
+                                                    <label class="block text-sm font-bold mb-2 text-[#10233f]">Placeholder Text (optional)</label>
+                                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" placeholder="e.g. Enter your answer here..." x-model="questionForm.placeholder">
+                                                </div>
+                                            </template>
                                             <div>
                                                 <label class="block text-sm font-bold mb-2 text-[#10233f]">Help Text (optional)</label>
                                                 <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" placeholder="Additional guidance for respondents..." x-model="questionForm.help_text">
@@ -482,7 +496,7 @@
 
                                                 <div>
                                                     <label class="block text-sm font-bold mb-2 text-[#10233f]">Show only if question</label>
-                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" @change="questionForm.condition_question_id = $event.target.value">
+                                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" @change="questionForm.condition_question_id = $event.target.value; questionForm.condition_value = ''">
                                                         <option value="" :selected="!questionForm.condition_question_id">No condition</option>
                                                         <template x-for="candidate in allQuestionsForConditions()" :key="candidate.id">
                                                             <option :value="candidate.id" :selected="questionForm.condition_question_id === candidate.id" x-text="candidate.display_label"></option>
@@ -505,7 +519,22 @@
                                                     </div>
                                                     <div>
                                                         <label class="block text-sm font-bold mb-2 text-[#10233f]">Value to compare against</label>
-                                                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" placeholder="e.g. Philippines, Yes, 18" x-model="questionForm.condition_value">
+                                                        <template x-if="questionForm.condition_operator !== 'in' && (conditionSourceQuestion()?.answers || []).length > 0">
+                                                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" @change="questionForm.condition_value = $event.target.value">
+                                                                <option value="" :selected="!questionForm.condition_value">Select a value...</option>
+                                                                <template x-for="answer in (conditionSourceQuestion().answers || []).slice().sort((a, b) => a.order - b.order)" :key="answer.id">
+                                                                    <option :value="answer.text" :selected="questionForm.condition_value === answer.text" x-text="answer.text"></option>
+                                                                </template>
+                                                            </select>
+                                                        </template>
+                                                        <template x-if="questionForm.condition_operator === 'in' || (conditionSourceQuestion()?.answers || []).length === 0">
+                                                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" placeholder="e.g. Philippines, Yes, 18" x-model="questionForm.condition_value">
+                                                        </template>
+                                                        <template x-if="questionForm.condition_operator === 'in' && (conditionSourceQuestion()?.answers || []).length > 0">
+                                                            <p class="text-xs text-[#5a6b86] mt-1">
+                                                                Available choices: <span x-text="conditionSourceQuestion().answers.map(a => a.text).join(', ')"></span> — enter as JSON, e.g. <span x-text="JSON.stringify(conditionSourceQuestion().answers.slice(0, 2).map(a => a.text))"></span>
+                                                            </p>
+                                                        </template>
                                                     </div>
                                                 </div>
                                                 <p class="text-xs text-[#5a6b86]">Tip: use this to hide follow-up questions until a respondent selects a specific answer.</p>
@@ -542,7 +571,7 @@
                                                     <template x-if="questionForm.type === 'pre_selected'">
                                                         <p class="text-xs text-[#5a6b86] mb-2">Respondents will see this answer already selected, with no other choice to make.</p>
                                                     </template>
-                                                    <div class="space-y-2">
+                                                    <div class="answer-options-list space-y-2 pr-1">
                                                         <template x-for="(answer, idx) in questionForm.answers" :key="idx">
                                                             <div
                                                                 class="flex items-center gap-2"
@@ -638,6 +667,9 @@
                                                     <button @click="editQuestion(question)" class="admin-icon-btn p-1.5 text-[#003087] hover:bg-blue-100 rounded">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                     </button>
+                                                    <button @click="duplicateQuestion(question)" title="Duplicate question" class="admin-icon-btn p-1.5 text-[#003087] hover:bg-blue-100 rounded">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                    </button>
                                                     <button @click="deleteQuestion(question.id)" class="admin-icon-btn p-1.5 text-red-600 hover:bg-red-100 rounded">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                     </button>
@@ -699,10 +731,6 @@
                                             </label>
                                             <template x-if="question.help_text">
                                                 <p class="text-sm text-[#5a6b86] mb-2" x-text="question.help_text"></p>
-                                            </template>
-
-                                            <template x-if="question.type === 'display'">
-                                                <div class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-slate-50 text-[#10233f]" x-text="question.placeholder || ''"></div>
                                             </template>
 
                                             <template x-if="question.type === 'text'">
@@ -803,17 +831,18 @@ function adminApp() {
 
         allQuestionsForConditions() {
             const currentQuestionId = this.editingQuestionId;
-            const candidates = this.categories.flatMap(category =>
-                (category.questions || [])
-                    .slice()
-                    .sort((a, b) => a.order - b.order)
-                    .filter(question => question.id !== currentQuestionId)
-                    .map(question => ({
-                        ...question,
-                        category_title: category.title,
-                        base_label: category.title + ' - ' + question.text,
-                    }))
-            );
+            const category = this.selectedCategory;
+            if (!category) return [];
+
+            const candidates = (category.questions || [])
+                .slice()
+                .sort((a, b) => a.order - b.order)
+                .filter(question => question.id !== currentQuestionId)
+                .map(question => ({
+                    ...question,
+                    category_title: category.title,
+                    base_label: question.text,
+                }));
 
             // Disambiguate questions that share identical text (and thus an identical
             // label) so two different questions can never look like the same option.
@@ -833,6 +862,11 @@ function adminApp() {
             });
 
             return candidates;
+        },
+
+        conditionSourceQuestion() {
+            if (!this.questionForm.condition_question_id) return null;
+            return this.allQuestionsForConditions().find(c => c.id === this.questionForm.condition_question_id) || null;
         },
 
         conditionQuestionText(questionId) {
@@ -870,7 +904,7 @@ function adminApp() {
             return (category.questions || [])
                 .slice()
                 .sort((a, b) => a.order - b.order)
-                .filter(question => this.isPreviewConditionMet(question));
+                .filter(question => question.type !== 'pre_selected' && this.isPreviewConditionMet(question));
         },
 
         findPreviewQuestionIdByRef(ref) {
@@ -1029,6 +1063,23 @@ function adminApp() {
             this.isEditingQuestion = true;
         },
 
+        duplicateQuestion(question) {
+            this.editingQuestionId = null;
+            this.questionForm = {
+                text: question.text + ' (Copy)',
+                type: question.type,
+                required: question.required,
+                answers: (question.answers || []).slice().sort((a, b) => a.order - b.order).map(a => ({ text: a.text })),
+                placeholder: question.placeholder || '',
+                help_text: question.help_text || '',
+                condition_question_id: question.condition_question_id || '',
+                condition_operator: question.condition_operator || 'notEmpty',
+                condition_value: question.condition_value || '',
+                repeat_count_question_id: question.repeat_count_question_id || '',
+            };
+            this.isEditingQuestion = true;
+        },
+
         async saveQuestion() {
             if (!this.questionForm.text.trim()) { alert('Please enter question text'); return; }
             if (!this.selectedCategory) return;
@@ -1085,7 +1136,7 @@ function adminApp() {
 
             this.isEditingQuestion = false;
             this.editingQuestionId = null;
-            this.questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: 'Region XI', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '', repeat_count_question_id: '' };
+            this.questionForm = { text: '', type: 'text', required: false, answers: [], placeholder: '', help_text: '', condition_question_id: '', condition_operator: 'notEmpty', condition_value: '', repeat_count_question_id: '' };
         },
 
         async deleteQuestion(id) {
