@@ -26,25 +26,66 @@
     }
 
     .survey-navbar-inner {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0.6rem 1.5rem;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
+        height: 58px;
+        padding: 0 2.5rem;
+        display: flex;
         align-items: center;
-        gap: 1.5rem;
+        justify-content: space-between;
+    }
+
+    .survey-tab-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-right: 1.5rem;
+    }
+
+    .survey-tab-inner {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .survey-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: none;
+        border: 1.5px solid transparent;
+        border-radius: 8px;
+        padding: 0.42rem 0.85rem;
+        color: rgba(255,255,255,0.85);
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        text-decoration: none;
+        transition: color 0.2s ease, border-color 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .survey-tab-btn:hover:not(:disabled) {
+        color: #fff;
+        border-color: #f5b800;
+    }
+
+    .survey-tab-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     .survey-brand {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.75rem;
+        margin-left: 1.5rem;
         min-width: 0;
     }
 
     .survey-brand-seal {
-        width: 30px;
-        height: 30px;
+        width: 34px;
+        height: 34px;
         border-radius: 50%;
         object-fit: contain;
         opacity: 0.92;
@@ -54,10 +95,9 @@
     .survey-brand-title {
         display: block;
         font-family: 'Cinzel', serif;
-        font-size: 0.82rem;
+        font-size: 0.92rem;
         font-weight: 700;
         letter-spacing: 0.06em;
-        text-transform: uppercase;
         color: #fff;
         line-height: 1.3;
         white-space: nowrap;
@@ -65,8 +105,10 @@
 
     .survey-brand-sub {
         display: block;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.65rem;
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         color: rgba(255,255,255,0.55);
         line-height: 1.3;
     }
@@ -75,6 +117,27 @@
         display: flex;
         align-items: center;
         gap: 0.65rem;
+    }
+
+    /* ── Fixed Progress Footer ── */
+    .survey-progress-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: #09107a;
+        border-top: 1px solid rgba(201,162,39,0.3);
+        box-shadow: 0 -2px 16px rgba(0,0,0,0.22);
+        padding: 0.7rem 2.5rem;
+    }
+
+    .survey-progress-footer-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
     .survey-progress-track {
@@ -131,8 +194,10 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.38rem 0.9rem;
-        background: #fff;
+        padding: 0.55rem 1rem;
+        background: transparent;
+        border: 2.5px solid rgba(255,255,255,0.8) !important;
+        color: #fff !important;
         border: 1.5px solid #fff;
         border-radius: 8px;
         color: #09107a;
@@ -146,7 +211,7 @@
     }
 
     .survey-nav-btn-home svg { width: 13px; height: 13px; }
-    .survey-nav-btn-home:hover { background: #eef2ff; }
+    .survey-nav-btn-home:hover { background: rgba(255,255,255,0.14); }
 
     .survey-sheet {
         background: #f6f7fb;
@@ -238,11 +303,11 @@
 
     .nav-btn-prev {
         background: transparent;
-        color: #6b7a99;
-        border: 1.5px solid #d0daea;
+        color: #09107a;
+        border: 1.5px solid #09107a;
     }
 
-    .nav-btn-prev:hover { border-color: #09107a; color: #09107a; }
+    .nav-btn-prev:hover { background: #f0f4ff; border-color: #1a24d2; color: #1a24d2; }
     .nav-btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .nav-btn-save {
@@ -289,7 +354,7 @@
 </style>
 <div x-data="surveyApp()" x-cloak>
     {{-- ── Survey Form ── --}}
-    <div class="min-h-screen survey-page pb-12">
+    <div class="min-h-screen survey-page" style="padding-bottom: 4.5rem;">
             {{-- Header --}}
             <nav class="survey-navbar">
                 <div class="survey-navbar-inner">
@@ -298,72 +363,81 @@
                     <div class="survey-brand">
                         <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU" class="survey-brand-seal" onerror="this.style.display='none'">
                         <span>
-                            <span class="survey-brand-title">Ateneo Graduate Tracer Study</span>
-                            <span class="survey-brand-sub" x-text="'Section ' + currentSection + ' of ' + totalSections"></span>
+                            <span class="survey-brand-title">Ateneo de Davao University</span>
+                            <span class="survey-brand-sub">Graduate Tracer Study</span>
                         </span>
                     </div>
 
-                    {{-- Progress bar --}}
-                    <div class="survey-progress-wrap">
-                        <div class="survey-progress-track">
-                            <div class="survey-progress-fill" :style="{ width: answeredProgress + '%' }"></div>
-                        </div>
-                        <span class="survey-progress-pct" x-text="answeredProgress + '%'"></span>
-                    </div>
-
-                    {{-- Buttons --}}
-                    <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <template x-if="!isEditMode">
-                            <button class="survey-nav-btn" @click="showResumeDialog = true">
-                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Resume
+                    {{-- Right Buttons --}}
+                    <div class="survey-tab-nav">
+                        <div x-show="!isEditMode" class="survey-tab-inner">
+                            <button class="survey-tab-btn" @click="saveForLater()" :disabled="saving">
+                                <span x-text="saving ? 'Saving...' : 'Save'"></span>
                             </button>
-                        </template>
-                        <a href="/" class="survey-nav-btn-home">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                            Home
-                        </a>
+                            <button class="survey-tab-btn" @click="showResumeDialog = true">Resume</button>
+                        </div>
+                        <a href="/" class="survey-tab-btn">Home</a>
                     </div>
 
                 </div>
             </nav>
             <div class="survey-scroll-bar"></div>
 
+            {{-- Fixed Progress Footer --}}
+            <div class="survey-progress-footer">
+                <div class="survey-progress-footer-inner">
+                    <span x-text="'Section ' + currentSection + ' of ' + totalSections" style="white-space:nowrap;flex-shrink:0;font-family:'Cinzel',serif;font-size:0.78rem;font-weight:800;color:#f5b800;letter-spacing:0.05em;"></span>
+                    <div class="survey-progress-track">
+                        <div class="survey-progress-fill" :style="{ width: answeredProgress + '%' }"></div>
+                    </div>
+                    <span class="survey-progress-pct" x-text="answeredProgress + '%'"></span>
+                </div>
+            </div>
+
             {{-- Resume Dialog --}}
             <template x-if="showResumeDialog">
-                <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Resume Survey</h3>
-                            <button @click="showResumeDialog = false; resumeError = ''" class="p-1 hover:bg-gray-100 rounded">
-                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.55);">
+                    <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(9,16,122,0.25);max-width:520px;width:100%;overflow:hidden;">
+                        {{-- Header --}}
+                        <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.75rem 2rem 1.5rem;display:flex;align-items:flex-start;justify-content:space-between;">
+                            <div>
+                                <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:#fff;margin:0 0 0.3rem;">Resume Survey</h3>
+                                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:rgba(255,255,255,0.65);margin:0;">Enter your 6-character code to continue.</p>
+                            </div>
+                            <button @click="showResumeDialog = false; resumeError = ''" style="background:rgba(255,255,255,0.12);border:none;border-radius:8px;padding:0.4rem;cursor:pointer;line-height:0;margin-left:1rem;flex-shrink:0;">
+                                <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
-                        <p class="text-sm text-gray-600 mb-4">Enter your 6-character resume code to continue where you left off.</p>
-                        <input
-                            type="text"
-                            maxlength="6"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-2xl tracking-[0.3em] font-mono uppercase"
-                            placeholder="ABC123"
-                            x-model="resumeInput"
-                            @keydown.enter="resumeSurvey()"
-                        >
-                        <template x-if="resumeError">
-                            <p class="text-sm text-red-600 mt-2" x-text="resumeError"></p>
-                        </template>
-                        <button
-                            @click="resumeSurvey()"
-                            class="w-full mt-4 px-6 py-3 bg-[#003087] text-white rounded-lg font-medium hover:bg-[#002366] transition-colors"
-                        >
-                            Load My Progress
-                        </button>
+                        {{-- Body --}}
+                        <div style="padding:1.75rem 2rem;">
+                            <input
+                                type="text"
+                                maxlength="6"
+                                style="width:100%;padding:1rem 1rem;border:1.5px solid #c8d3ee;border-radius:10px;text-align:center;font-size:2rem;letter-spacing:0.35em;font-family:monospace;text-transform:uppercase;color:#09107a;outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+                                placeholder="A B C 1 2 3"
+                                x-model="resumeInput"
+                                @keydown.enter="resumeSurvey()"
+                                @focus="$el.style.borderColor='#09107a'"
+                                @blur="$el.style.borderColor='#c8d3ee'"
+                            >
+                            <template x-if="resumeError">
+                                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.8rem;color:#dc2626;margin-top:0.6rem;" x-text="resumeError"></p>
+                            </template>
+                            <button
+                                @click="resumeSurvey()"
+                                style="width:100%;margin-top:1.25rem;padding:1rem 1rem;background:#09107a;color:#fff;border:none;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;transition:background 0.15s;"
+                                onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'"
+                            >
+                                Load My Progress
+                            </button>
+                        </div>
                     </div>
                 </div>
             </template>
 
             {{-- Admin Login Modal --}}
             <template x-if="showLogin">
-                <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.55);">
                     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
                         <div class="px-8 py-8">
                             <div class="flex items-center justify-between mb-6">
@@ -425,21 +499,32 @@
 
             {{-- Saved Banner --}}
             <template x-if="showSavedBanner && resumeCode">
-                <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
-                        <p class="text-lg font-semibold text-gray-900 mb-1">Progress Saved!</p>
-                        <p class="text-sm text-gray-600 mb-4">Your resume code:</p>
-                        <div class="flex items-center justify-center gap-2 mb-2">
-                            <span class="text-3xl font-mono font-bold tracking-[0.3em] text-[#003087]" x-text="resumeCode"></span>
-                            <button @click="copyCode()" class="p-1.5 hover:bg-gray-100 rounded" title="Copy code">
-                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.55);">
+                    <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(9,16,122,0.25);max-width:520px;width:100%;overflow:hidden;">
+                        {{-- Header --}}
+                        <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.75rem 2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                            <div style="text-align:left;">
+                                <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:#fff;margin:0 0 0.3rem;">Progress Saved!</h3>
+                                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:rgba(255,255,255,0.65);margin:0;">Your resume code:</p>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;background:rgba(245,184,0,0.18);border-radius:50%;flex-shrink:0;">
+                                <svg width="24" height="24" fill="none" stroke="#f5b800" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        {{-- Body --}}
+                        <div style="padding:1.75rem 2rem;">
+                            <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;background:#f0f4ff;border-radius:12px;padding:1.1rem 1.5rem;margin-bottom:1rem;">
+                                <span style="font-family:monospace;font-size:2.2rem;font-weight:800;letter-spacing:0.35em;color:#09107a;" x-text="resumeCode"></span>
+                                <button @click="copyCode()" title="Copy code" style="background:none;border:none;cursor:pointer;padding:0.3rem;border-radius:6px;line-height:0;transition:background 0.15s;" onmouseover="this.style.background='#e0e8ff'" onmouseout="this.style.background='none'">
+                                    <svg width="20" height="20" fill="none" stroke="#09107a" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                </button>
+                            </div>
+                            <p style="font-family:'Nunito Sans',sans-serif;font-size:0.88rem;color:#6b7a99;margin:0 0 0.75rem;text-align:center;">Save this code to resume your progress anytime.</p>
+                            <p style="font-family:'Nunito Sans',sans-serif;font-size:0.82rem;color:#dc2626;font-weight:600;margin:0 0 1.25rem;text-align:center;">⚠ You have 10 days to complete the survey. After that, your saved progress will be deleted and you will need to start over.</p>
+                            <button @click="showSavedBanner = false" style="width:100%;padding:1rem 1rem;background:#09107a;color:#fff;border:none;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">
+                                Got it
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mb-2">Save this code to resume your progress anytime.</p>
-                        <p class="text-xs text-red-500 font-medium mb-6">⚠ You have 10 days to complete the survey. After that, your saved progress will be deleted and you will need to start over.</p>
-                        <button @click="showSavedBanner = false" class="w-full px-6 py-3 bg-[#003087] text-white rounded-lg font-medium hover:bg-[#002366] transition-colors">
-                            Got it
-                        </button>
                     </div>
                 </div>
             </template>
@@ -797,17 +882,6 @@
                         Previous Section
                     </button>
 
-                    <template x-if="!isEditMode">
-                        <button
-                            class="nav-btn nav-btn-save"
-                            @click="saveForLater()"
-                            :disabled="saving"
-                        >
-                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <span x-text="saving ? 'Saving...' : 'Save for Later'"></span>
-                        </button>
-                    </template>
-
                     <template x-if="currentSection < totalSections">
                         <button class="nav-btn nav-btn-next" @click="nextSection()">
                             Next Section
@@ -839,22 +913,25 @@
         x-cloak
         style="position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);"
     >
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);box-shadow:0 32px 64px rgba(9,16,122,0.28);overflow:hidden;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;max-width:560px;width:calc(100% - 3rem);max-height:85vh;box-shadow:0 32px 64px rgba(9,16,122,0.28);display:flex;flex-direction:column;overflow:hidden;">
             {{-- Header --}}
-            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:linear-gradient(135deg,#09107a 0%,#1a24d2 100%);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
                 <h3 style="font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0;" x-text="alertModalTitle"></h3>
                 <svg width="32" height="32" fill="none" stroke="#f5b800" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
             </div>
-            {{-- Body --}}
-            <div style="padding:1rem 2rem 1.75rem;">
-                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#10233f;line-height:1.7;margin:0 0 1rem;" x-text="alertModalMessage"></p>
+            {{-- Scrollable Body --}}
+            <div style="padding:1rem 2rem 0;overflow-y:auto;flex:1;">
+                <p style="font-family:'Nunito Sans',sans-serif;font-size:0.95rem;color:#dc2626;line-height:1.7;margin:0 0 1rem;" x-text="alertModalMessage"></p>
                 <template x-if="alertModalItems.length > 0">
-                    <ul style="margin:0 0 1.5rem;padding:0;list-style:none;">
+                    <ul style="margin:0;padding:0;list-style:none;">
                         <template x-for="item in alertModalItems" :key="item">
                             <li style="font-family:'Nunito Sans',sans-serif;font-size:0.9rem;color:#10233f;padding:0.45rem 0.9rem;border-left:3px solid #f5b800;margin-bottom:0.5rem;border-radius:0 6px 6px 0;background:#fffbf0;" x-text="item"></li>
                         </template>
                     </ul>
                 </template>
+            </div>
+            {{-- Sticky Button --}}
+            <div style="padding:1.25rem 2rem;flex-shrink:0;">
                 <button @click="showAlertModal = false" style="width:100%;padding:0.85rem 1rem;background:#09107a;color:#fff;border:none;border-radius:9px;font-family:'Nunito Sans',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#1a24d2'" onmouseout="this.style.background='#09107a'">Got it</button>
             </div>
         </div>
@@ -1010,8 +1087,13 @@ function surveyApp() {
         },
 
         get answeredProgress() {
-            if (this.totalQuestionsCount === 0) return 0;
-            return Math.round(this.answeredQuestionsCount / this.totalQuestionsCount * 100);
+            const questions = this.visibleQuestions.filter(q => q.type !== 'display');
+            if (questions.length === 0) return 0;
+            const answered = questions.filter(q => {
+                const v = this.formData[q.id];
+                return v !== undefined && v !== null && v !== '';
+            }).length;
+            return Math.round(answered / questions.length * 100);
         },
 
         get currentCategory() {

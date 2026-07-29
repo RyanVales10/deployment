@@ -296,9 +296,8 @@
     .info-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
         gap: 1.5rem;
-        align-items: stretch;
-        align-items: start;
     }
 
     /* About card: blue top + white bottom */
@@ -307,8 +306,9 @@
         overflow: hidden;
         border: 1px solid rgba(201,162,39,0.2);
         box-shadow: 0 4px 20px rgba(201,162,39,0.07), 0 8px 28px rgba(9,16,122,0.12);
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 2;
     }
 
     .about-card-top {
@@ -349,7 +349,6 @@
     .about-card-bottom {
         background: #fff;
         padding: 1rem 1.75rem 1rem;
-        flex: 1;
     }
 
     .meta-row {
@@ -381,8 +380,9 @@
         overflow: hidden;
         border: 1px solid rgba(201,162,39,0.2);
         box-shadow: 0 4px 20px rgba(201,162,39,0.07), 0 8px 28px rgba(9,16,122,0.12);
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 2;
     }
 
     .time-card-top {
@@ -745,17 +745,18 @@
     .footer-inner {
         max-width: 1280px;
         margin: 0 auto;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        justify-content: space-between;
         gap: 1rem;
     }
 
     .footer-brand-title {
         font-family: 'Cinzel', serif;
         font-size: 0.78rem;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: 0.1em;
+        margin-top: 3px;
         text-transform: uppercase;
         color: #fff;
     }
@@ -763,9 +764,11 @@
     .footer-tagline {
         font-family: 'Cinzel', serif;
         font-size: 0.72rem;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: 0.1em;
         text-transform: uppercase;
+        text-align: right;
+        margin-top: 3px;
         color: #fff;
     }
 
@@ -773,7 +776,7 @@
     .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(7,14,46,0.75);
+        background: rgba(0,0,0,0.55);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -993,7 +996,7 @@
             <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU Seal" class="navbar-seal" onerror="this.style.display='none'">
             <span>
                 <span class="navbar-brand-title">Ateneo de Davao University</span>
-                <span class="navbar-brand-sub">Alumni Affairs Office</span>
+                <span class="navbar-brand-sub">Graduate Tracer Study</span>
             </span>
         </a>
 
@@ -1091,11 +1094,11 @@
                         </div>
                         <div class="time-item">
                             <span class="time-item-icon">
-                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12V22H4V12"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 7H2v5h20V7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
                             </span>
                             <span class="time-item-text">
-                                <span class="time-item-title">Your privacy matters</span>
-                                <span class="time-item-desc">All responses are confidential and used only in aggregate form.</span>
+                                <span class="time-item-title">Your participation matters!</span>
+                                <span class="time-item-desc">As a token of appreciation for your time and effort, you are entitled to participate in the raffle for a chance to win an official AdDU polo shirt!</span>
                             </span>
                         </div>
                     </div>
@@ -1181,9 +1184,9 @@
     <footer class="footer-bar">
         <div class="footer-inner">
             <span class="footer-brand-title">Ateneo Graduate Tracer Study</span>
+            <a href="/developers" style="text-decoration:none;font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);transition:color 0.15s;white-space:nowrap;text-align:center;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">The Minds Behind the Innovation</a>
             <span class="footer-tagline">Strong in Faith That Does Justice</span>
         </div>
-        <a href="/developers" style="position:absolute;right:2.5rem;top:55%;transform:translateY(-50%);text-decoration:none;font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);transition:color 0.15s;white-space:nowrap;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">The Minds Behind the Innovation</a>
     </footer>
 
     {{-- ── PRIVACY MODAL ── --}}

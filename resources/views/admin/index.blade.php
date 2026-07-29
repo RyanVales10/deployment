@@ -24,10 +24,10 @@
     }
 
     .admin-topbar-seal {
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px;
-        max-width: 32px;
+        width: 35px !important;
+        height: 35px !important;
+        min-width: 35px;
+        max-width: 35px;
         border-radius: 50%;
         object-fit: contain;
         opacity: 0.9;
@@ -38,7 +38,7 @@
         font-family: 'Cinzel', serif;
         color: #fff;
         font-weight: 700;
-        font-size: 0.95rem !important;
+        font-size: 0.82rem !important;
         letter-spacing: 0.06em;
         text-transform: uppercase;
     }
@@ -49,21 +49,24 @@
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        border-radius: 8px;
+        border-radius: 10px;
         font-weight: 700;
         font-family: 'Nunito Sans', sans-serif;
         font-size: 0.82rem;
-        transition: all 0.15s;
-        background: #fff;
-        color: #09107a;
-        border: none;
-        padding: 0.4rem 0.9rem;
+        letter-spacing: 0.03em;
+        transition: background 0.2s;
+        background: transparent;
+        color: #fff;
+        border: 2.5px solid rgba(255,255,255,0.8);
+        padding: 0.55rem 1rem;
+        margin-right: 2.25rem;
         text-decoration: none;
         white-space: nowrap;
+        cursor: pointer;
     }
 
     .admin-back-btn:hover {
-        background: #e8edf6;
+        background: rgba(255,255,255,0.14);
     }
 
     /* White tab bar below topbar */
@@ -260,25 +263,21 @@
 <div class="admin-shell" x-data="adminApp()" x-cloak>
     {{-- Admin Header --}}
     <div class="admin-topbar sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex items-center justify-between gap-4">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2.5">
-                        <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="admin-topbar-seal" onerror="this.style.display='none'">
-                        <div>
-                            <h1 class="admin-heading" style="line-height:1.1;">Tracer Study Admin</h1>
-                            <p style="font-family:'Nunito Sans',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.55);letter-spacing:0.03em;margin:0;line-height:1.2;">Alumni Affairs Office</p>
-                        </div>
-                    </div>
+        <div style="height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-left:1.5rem;">
+                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="admin-topbar-seal" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="admin-heading" style="line-height:1.3;margin:0;">Tracer Study Admin</h1>
+                    <p style="font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.06em;margin:0;line-height:1.3;">Graduate Tracer Study</p>
                 </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Home
-                    </button>
-                </form>
             </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="admin-back-btn flex items-center gap-2 px-4 py-2 whitespace-nowrap text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Home
+                </button>
+            </form>
         </div>
 
         {{-- Navigation Tabs --}}

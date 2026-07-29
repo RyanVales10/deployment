@@ -16,17 +16,17 @@
         background-image:
             repeating-linear-gradient(
                 45deg,
-                rgba(9,16,122,0.08) 0,
-                rgba(9,16,122,0.08) 1px,
-                transparent 1px,
-                transparent 48px
+                rgba(9,16,122,0.1) 0,
+                rgba(9,16,122,0.1) 1.5px,
+                transparent 1.5px,
+                transparent 120px
             ),
             repeating-linear-gradient(
                 -45deg,
-                rgba(9,16,122,0.08) 0,
-                rgba(9,16,122,0.08) 1px,
-                transparent 1px,
-                transparent 48px
+                rgba(9,16,122,0.1) 0,
+                rgba(9,16,122,0.1) 1.5px,
+                transparent 1.5px,
+                transparent 120px
             );
         display: flex;
         flex-direction: column;
@@ -55,7 +55,7 @@
     }
 
     .dev-topbar-text {
-        margin-top: 6px;
+        margin-top: 2px;
     }
 
     .dev-topbar-seal {
@@ -68,10 +68,9 @@
     .dev-topbar-text h1 {
         display: block;
         font-family: 'Cinzel', serif;
-        font-size: 0.78rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         color: #fff;
         line-height: 1.3;
         margin: 0;
@@ -81,10 +80,9 @@
     .dev-topbar-text p {
         display: block;
         font-family: 'Cinzel', serif;
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         color: rgba(255,255,255,0.55);
         line-height: 1.3;
         margin: 0;
@@ -94,21 +92,23 @@
     .dev-back-btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.4rem 0.9rem;
-        border: none;
-        border-radius: 8px;
-        color: #09107a;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.50rem 1rem;
+        background: transparent;
+        border: 2.5px solid rgba(255,255,255,0.8);
+        border-radius: 10px;
+        color: #fff;
         font-family: 'Nunito Sans', sans-serif;
         font-size: 0.82rem;
         font-weight: 700;
         text-decoration: none;
         transition: background 0.15s;
-        background: #fff;
+        margin-right: 2.25rem;
     }
 
     .dev-back-btn:hover {
-        background: #e8edf6;
+        background: rgba(255,255,255,0.14);
     }
 
     /* ── Hero ── */
@@ -264,11 +264,11 @@
             <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU Seal" class="dev-topbar-seal" onerror="this.style.display='none'">
             <div class="dev-topbar-text">
                 <h1>Ateneo de Davao University</h1>
-                <p>Alumni Affairs Office</p>
+                <p>Graduate Tracer Study</p>
             </div>
         </div>
         <a href="/" class="dev-back-btn">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:block;flex-shrink:0;position:relative;top:-1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Home
         </a>
     </div>
@@ -287,11 +287,11 @@
     <div class="dev-grid">
         @php
         $developers = [
-            ['name' => 'Oneil V.',    'role' => 'Project Lead'],
-            ['name' => 'Justin RV',   'role' => 'Software Engineer'],
-            ['name' => 'Andrew JL',   'role' => 'Software Engineer'],
-            ['name' => 'Jon B',       'role' => 'Systems & Data Analyst'],
-            ['name' => 'Novie JP',    'role' => 'Systems & Data Analyst'],
+            ['name' => 'Victoriano, O.',  'role' => 'Project Lead'],
+            ['name' => 'Vales, R.',       'role' => 'Software Engineer'],
+            ['name' => 'Lomanta, A.',     'role' => 'Software Engineer'],
+            ['name' => 'Bautista, J.',    'role' => 'System & Data Analyst'],
+            ['name' => 'Pelobello, N.',   'role' => 'System & Data Analyst'],
         ];
         @endphp
 
