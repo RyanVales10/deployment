@@ -288,7 +288,7 @@
         @php
         $developers = [
             ['name' => 'Victoriano, O.',  'role' => 'Project Lead'],
-            ['name' => 'Vales, R.',       'role' => 'Software Engineer'],
+            ['name' => 'Vales, J.',       'role' => 'Software Engineer'],
             ['name' => 'Lomanta, A.',     'role' => 'Software Engineer'],
             ['name' => 'Bautista, J.',    'role' => 'System & Data Analyst'],
             ['name' => 'Pelobello, N.',   'role' => 'System & Data Analyst'],
