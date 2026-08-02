@@ -1082,13 +1082,8 @@ function surveyApp() {
         },
 
         get answeredProgress() {
-            const questions = this.visibleQuestions.filter(q => q.type !== 'display');
-            if (questions.length === 0) return 0;
-            const answered = questions.filter(q => {
-                const v = this.formData[q.id];
-                return v !== undefined && v !== null && v !== '';
-            }).length;
-            return Math.round(answered / questions.length * 100);
+            if (this.totalSections <= 1) return 100;
+            return Math.round((this.currentSection - 1) / (this.totalSections - 1) * 100);
         },
 
         get currentCategory() {
