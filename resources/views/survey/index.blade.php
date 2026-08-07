@@ -37,7 +37,10 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        margin-right: 1.5rem;
+        margin-right: 0;
+        padding: 0 2rem 0 3.5rem;
+        height: 100%;
+        background: #09107a;
     }
 
     .survey-tab-inner {
@@ -51,23 +54,25 @@
         align-items: center;
         gap: 0.35rem;
         background: none;
-        border: 1.5px solid transparent;
-        border-radius: 8px;
+        border: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
         padding: 0.42rem 0.85rem;
-        color: rgba(255,255,255,0.85);
+        padding-bottom: calc(0.42rem - 2px);
+        color: rgba(255,255,255,0.72);
         font-family: 'Nunito Sans', sans-serif;
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 0.01em;
         cursor: pointer;
         text-decoration: none;
-        transition: color 0.2s ease, border-color 0.2s ease;
         white-space: nowrap;
+        transition: color 0.2s, border-color 0.2s;
     }
 
     .survey-tab-btn:hover:not(:disabled) {
         color: #fff;
-        border-color: #f5b800;
+        border-bottom-color: #f5b800;
     }
 
     .survey-tab-btn:disabled {
