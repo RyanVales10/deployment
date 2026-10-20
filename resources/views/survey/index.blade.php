@@ -356,6 +356,42 @@
     .country-dropdown::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 8px; }
     .psgc-dropdown::-webkit-scrollbar-thumb,
     .country-dropdown::-webkit-scrollbar-thumb { background: #003087; border-radius: 8px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 720px) {
+        .survey-navbar-inner {
+            flex-wrap: wrap;
+            height: auto;
+            min-height: 54px;
+            padding: 0.6rem 1.1rem;
+            row-gap: 0.4rem;
+        }
+        .survey-brand { margin-left: 0; }
+        .survey-brand-title { font-size: 0.78rem; white-space: normal; }
+        .survey-brand-sub { font-size: 0.62rem; }
+        .survey-tab-nav {
+            width: 100%;
+            padding: 0;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .survey-tab-btn { padding: 0.4rem 0.6rem; font-size: 0.76rem; }
+
+        .survey-progress-footer { padding: 0.6rem 1rem; }
+        .survey-progress-footer-inner { gap: 0.6rem; }
+
+        .nav-footer { padding: 1rem 1.1rem; }
+        .nav-footer-inner {
+            flex-direction: column-reverse;
+            align-items: stretch;
+            gap: 0.65rem;
+        }
+        .nav-btn { justify-content: center; width: 100%; }
+
+        .section-hero { padding: 1.35rem 1.25rem; }
+        .section-hero-number { display: none; }
+        .section-hero-title { font-size: 1.4rem; }
+    }
 </style>
 <div x-data="surveyApp()" x-cloak>
     {{-- ── Survey Form ── --}}
@@ -550,18 +586,18 @@
 
                             {{-- Section Header --}}
                             <div class="section-hero">
-                                <div style="display:flex;align-items:center;justify-content:space-between;">
-                                    <div>
+                                <div class="section-hero-row" style="display:flex;align-items:center;justify-content:space-between;">
+                                    <div class="section-hero-text" style="min-width:0;">
                                         <p style="font-family:'Nunito Sans',sans-serif;font-size:0.85rem;font-weight:700;color:#f5b800;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 0.45rem;display:flex;align-items:center;gap:0.5rem;">
                                             <span style="display:inline-block;width:16px;height:2px;background:#f5b800;border-radius:1px;flex-shrink:0;"></span>
                                             <span x-text="'Section ' + currentSection + ' of ' + totalSections"></span>
                                         </p>
-                                        <h2 style="font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.75rem;" x-text="currentCategory.title.toUpperCase()"></h2>
+                                        <h2 class="section-hero-title" style="font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:#fff;letter-spacing:0.03em;margin:0 0 0.75rem;" x-text="currentCategory.title.toUpperCase()"></h2>
                                         <template x-if="currentCategory.description">
                                             <p style="font-family:'Nunito Sans',sans-serif;font-size:1rem;color:rgba(255,255,255,0.8);line-height:1.65;margin:0;" x-text="currentCategory.description"></p>
                                         </template>
                                     </div>
-                                    <div style="font-family:'Cinzel',serif;font-size:4.5rem;font-weight:800;color:rgba(255,255,255,0.25);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(currentSection).padStart(2,'0')"></div>
+                                    <div class="section-hero-number" style="font-family:'Cinzel',serif;font-size:4.5rem;font-weight:800;color:rgba(255,255,255,0.25);line-height:1;padding-left:1.5rem;flex-shrink:0;" x-text="String(currentSection).padStart(2,'0')"></div>
                                 </div>
                             </div>
 

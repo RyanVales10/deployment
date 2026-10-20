@@ -175,7 +175,8 @@
         padding: 2rem 1.75rem;
         position: relative;
         width: 320px;
-        flex-shrink: 0;
+        max-width: 100%;
+        flex-shrink: 1;
         box-shadow: 0 8px 32px rgba(9,16,122,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
         display: flex;
         flex-direction: column;
@@ -253,6 +254,29 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: #fff;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+        .dev-topbar {
+            height: auto;
+            flex-wrap: wrap;
+            padding: 0.6rem 1.1rem;
+            row-gap: 0.5rem;
+        }
+        .dev-topbar-brand { margin-left: 0; }
+        .dev-topbar-text h1 { font-size: 0.78rem; }
+        .dev-topbar-text p { font-size: 0.62rem; }
+        .dev-back-btn { margin-right: 0; padding: 0.4rem 0.8rem; font-size: 0.76rem; }
+
+        .dev-grid { padding: 0 1.25rem 3rem; }
+
+        .dev-footer { padding: 1rem 1.25rem; }
+        .dev-footer-inner {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.4rem;
+        }
     }
 </style>
 

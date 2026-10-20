@@ -35,6 +35,7 @@ Route::get('/admin', [\App\Http\Controllers\Auth\LoginController::class, 'showLo
 Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/responses', [AdminController::class, 'responses']);
+    Route::get('/analytics', [AdminController::class, 'analytics']);
     Route::get('/responses/{id}/details', [AdminController::class, 'responseDetails']);
     Route::get('/export-csv', [AdminController::class, 'exportCsv']);
 

@@ -63,6 +63,202 @@ class AdminController extends Controller
         return $categories;
     }
 
+    public function analytics()
+    {
+        $questionTexts = [
+            'worked_past_week' => 'Did you work or have a business/job during the past week?',
+            'has_job_on_leave' => 'Although you did not work, do you have a job/business?',
+            'looked_for_work' => 'Did you look for work or try to establish a business during the past week?',
+            'employment_type' => 'Type of employment',
+            'grad_studies' => 'Have you pursued graduate studies (Masters/Doctorate)?',
+            'education_required' => 'Was your education required for this job?',
+            'program' => 'What baccalaureate program/degree did you complete?',
+            'income_current' => 'Monthly income (PHP)',
+            'income_first' => 'Monthly income at first job (PHP)',
+        ];
+
+        $questionIds = Question::whereIn('text', array_values($questionTexts))
+            ->get()
+            ->pluck('id', 'text');
+
+        $idToKey = [];
+        foreach ($questionTexts as $key => $text) {
+            if ($questionIds->has($text)) {
+                $idToKey[$questionIds[$text]] = $key;
+            }
+        }
+
+        $byResponse = [];
+        if (!empty($idToKey)) {
+            ResponseAnswer::whereIn('question_id', array_keys($idToKey))
+                ->get(['response_id', 'question_id', 'value'])
+                ->each(function ($ra) use (&$byResponse, $idToKey) {
+                    $byResponse[$ra->response_id][$idToKey[$ra->question_id]] = $ra->value;
+                });
+        }
+
+        // ── Employment Status Overview ──
+        $employmentStatus = [
+            'Employed' => 0,
+            'Self-employed/Entrepreneur' => 0,
+            'Unemployed' => 0,
+            'Pursuing Further Studies' => 0,
+            'Not Seeking Employment' => 0,
+        ];
+
+        $employedResponseIds = [];
+
+        foreach ($byResponse as $responseId => $data) {
+            if (!array_key_exists('worked_past_week', $data)) {
+                continue;
+            }
+
+            $hasJob = ($data['worked_past_week'] === 'Yes') || (($data['has_job_on_leave'] ?? null) === 'Yes');
+
+            if ($hasJob) {
+                $employedResponseIds[$responseId] = true;
+                if (($data['employment_type'] ?? null) === 'Self-employed') {
+                    $employmentStatus['Self-employed/Entrepreneur']++;
+                } else {
+                    $employmentStatus['Employed']++;
+                }
+            } elseif (($data['looked_for_work'] ?? null) === 'Yes') {
+                $employmentStatus['Unemployed']++;
+            } elseif (($data['grad_studies'] ?? null) === 'Yes') {
+                $employmentStatus['Pursuing Further Studies']++;
+            } else {
+                $employmentStatus['Not Seeking Employment']++;
+            }
+        }
+
+        // ── Job–Degree Alignment by Program (employed respondents only) ──
+        $alignmentLabels = ['Aligned', 'Partially Aligned', 'Not Aligned'];
+        $alignmentCounts = [];
+
+        foreach (array_keys($employedResponseIds) as $responseId) {
+            $data = $byResponse[$responseId];
+            $label = match ($data['education_required'] ?? null) {
+                'Yes' => 'Aligned',
+                'Not required but preferred' => 'Partially Aligned',
+                'No' => 'Not Aligned',
+                default => null,
+            };
+            if ($label === null) {
+                continue;
+            }
+
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $alignmentCounts[$program][$label] = ($alignmentCounts[$program][$label] ?? 0) + 1;
+        }
+
+        $alignmentByProgram = $this->capByRespondentCount($alignmentCounts, $alignmentLabels, 8);
+        foreach ($alignmentByProgram as $program => $counts) {
+            $total = array_sum($counts);
+            $percentages = [];
+            foreach ($alignmentLabels as $label) {
+                $percentages[$label] = $total > 0 ? round((($counts[$label] ?? 0) / $total) * 100, 1) : 0;
+            }
+            $percentages['total'] = $total;
+            $alignmentByProgram[$program] = $percentages;
+        }
+
+        // ── Monthly Income Distribution (initial vs current, by program) ──
+        $brackets = ['<10k', '10k–19k', '20k–29k', '30k–49k', '50k+'];
+        $bracketFor = function ($amount) {
+            if ($amount === null || $amount === '') {
+                return null;
+            }
+            $amount = (float) $amount;
+            return match (true) {
+                $amount < 10000 => '<10k',
+                $amount < 20000 => '10k–19k',
+                $amount < 30000 => '20k–29k',
+                $amount < 50000 => '30k–49k',
+                default => '50k+',
+            };
+        };
+
+        $incomeCounts = [];
+        foreach ($byResponse as $data) {
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+
+            $currentBracket = $bracketFor($data['income_current'] ?? null);
+            if ($currentBracket) {
+                $incomeCounts[$program]['current'][$currentBracket] = ($incomeCounts[$program]['current'][$currentBracket] ?? 0) + 1;
+                $incomeCounts['All Programs']['current'][$currentBracket] = ($incomeCounts['All Programs']['current'][$currentBracket] ?? 0) + 1;
+            }
+
+            $firstBracket = $bracketFor($data['income_first'] ?? null);
+            if ($firstBracket) {
+                $incomeCounts[$program]['first'][$firstBracket] = ($incomeCounts[$program]['first'][$firstBracket] ?? 0) + 1;
+                $incomeCounts['All Programs']['first'][$firstBracket] = ($incomeCounts['All Programs']['first'][$firstBracket] ?? 0) + 1;
+            }
+        }
+
+        $incomeByProgram = ['All Programs' => [
+            'current' => array_map(fn ($b) => $incomeCounts['All Programs']['current'][$b] ?? 0, $brackets),
+            'first' => array_map(fn ($b) => $incomeCounts['All Programs']['first'][$b] ?? 0, $brackets),
+        ]];
+
+        $programTotals = [];
+        foreach ($incomeCounts as $program => $data) {
+            if ($program === 'All Programs') {
+                continue;
+            }
+            $programTotals[$program] = array_sum($data['current'] ?? []) + array_sum($data['first'] ?? []);
+        }
+        arsort($programTotals);
+
+        foreach (array_slice(array_keys($programTotals), 0, 8) as $program) {
+            $data = $incomeCounts[$program];
+            $incomeByProgram[$program] = [
+                'current' => array_map(fn ($b) => $data['current'][$b] ?? 0, $brackets),
+                'first' => array_map(fn ($b) => $data['first'][$b] ?? 0, $brackets),
+            ];
+        }
+
+        return view('admin.analytics', [
+            'employmentStatus' => $employmentStatus,
+            'alignmentByProgram' => $alignmentByProgram,
+            'incomeByProgram' => $incomeByProgram,
+            'incomeBrackets' => $brackets,
+        ]);
+    }
+
+    /**
+     * Keep the top N programs by respondent count and fold the rest into "Other",
+     * so a long tail of free-text program names doesn't blow up the chart.
+     */
+    private function capByRespondentCount(array $counts, array $labels, int $limit): array
+    {
+        $totals = [];
+        foreach ($counts as $program => $byLabel) {
+            $totals[$program] = array_sum($byLabel);
+        }
+        arsort($totals);
+
+        $kept = array_slice(array_keys($totals), 0, $limit);
+        $result = [];
+        foreach ($kept as $program) {
+            $result[$program] = $counts[$program];
+        }
+
+        $rest = array_diff(array_keys($counts), $kept);
+        if (!empty($rest)) {
+            $other = array_fill_keys($labels, 0);
+            foreach ($rest as $program) {
+                foreach ($labels as $label) {
+                    $other[$label] += $counts[$program][$label] ?? 0;
+                }
+            }
+            if (array_sum($other) > 0) {
+                $result['Other'] = $other;
+            }
+        }
+
+        return $result;
+    }
+
     public function responses()
     {
         $responses = Response::orderBy('submitted_at', 'desc')->get();

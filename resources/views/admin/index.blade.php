@@ -246,17 +246,48 @@
         background: rgba(245, 184, 0, 0.18);
         color: #7a5900;
     }
+
+    .admin-topbar-row {
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2.5rem;
+    }
+
+    .admin-topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-left: 1.5rem;
+        min-width: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+        .admin-topbar-row {
+            height: auto;
+            flex-wrap: wrap;
+            padding: 0.6rem 1.1rem;
+            row-gap: 0.5rem;
+        }
+        .admin-topbar-brand { margin-left: 0; }
+        .admin-heading { font-size: 0.72rem !important; }
+        .admin-topbar-sub { font-size: 0.6rem !important; }
+        .admin-back-btn { margin-right: 0 !important; padding: 0.4rem 0.8rem !important; font-size: 0.76rem !important; }
+        .admin-tab-btn { padding: 0.55rem 0.8rem !important; font-size: 0.8rem !important; }
+    }
 </style>
 
 <div class="admin-shell" x-data="adminApp()" x-cloak>
     {{-- Admin Header --}}
     <div class="admin-topbar sticky top-0 z-40">
-        <div style="height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;">
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-left:1.5rem;">
+        <div class="admin-topbar-row">
+            <div class="admin-topbar-brand">
                 <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="" class="admin-topbar-seal" onerror="this.style.display='none'">
                 <div>
                     <h1 class="admin-heading" style="line-height:1.3;margin:0;">Tracer Study Admin</h1>
-                    <p style="font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.06em;margin:0;line-height:1.3;">Graduate Tracer Study</p>
+                    <p class="admin-topbar-sub" style="font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.06em;margin:0;line-height:1.3;">Graduate Tracer Study</p>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}">
@@ -278,6 +309,10 @@
                 <a href="/admin/responses"
                    class="admin-tab-btn inactive whitespace-nowrap">
                     Responses
+                </a>
+                <a href="/admin/analytics"
+                   class="admin-tab-btn inactive whitespace-nowrap">
+                    Analytics
                 </a>
             </nav>
         </div>
