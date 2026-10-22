@@ -93,7 +93,7 @@ class SurveySeeder extends Seeder
                 'description' => 'Please provide your identification details. All information will be kept strictly confidential.',
                 'order' => 1,
                 'questions' => [
-                    ['text' => 'Region Graduated From', 'type' => 'display', 'placeholder' => 'Region XI', 'order' => 1],
+                    ['text' => 'Region Graduated From', 'type' => 'display', 'order' => 1],
                     ['text' => 'Name of Respondent', 'type' => 'text', 'placeholder' => 'Full name', 'order' => 2],
                     ['text' => 'Email', 'type' => 'text', 'placeholder' => 'email@example.com', 'order' => 3],
                     ['text' => 'Mobile No.', 'type' => 'text', 'placeholder' => '09XX XXX XXXX', 'order' => 4],
