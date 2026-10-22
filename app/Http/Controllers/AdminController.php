@@ -97,15 +97,9 @@ class AdminController extends Controller
                 });
         }
 
-        // ── Employment Status Overview ──
-        $employmentStatus = [
-            'Employed' => 0,
-            'Self-employed/Entrepreneur' => 0,
-            'Unemployed' => 0,
-            'Pursuing Further Studies' => 0,
-            'Not Seeking Employment' => 0,
-        ];
-
+        // ── Employment Status Overview (by program) ──
+        $statusLabels = ['Employed', 'Self-employed/Entrepreneur', 'Unemployed', 'Pursuing Further Studies', 'Not Seeking Employment'];
+        $employmentCounts = [];
         $employedResponseIds = [];
 
         foreach ($byResponse as $responseId => $data) {
@@ -117,18 +111,22 @@ class AdminController extends Controller
 
             if ($hasJob) {
                 $employedResponseIds[$responseId] = true;
-                if (($data['employment_type'] ?? null) === 'Self-employed') {
-                    $employmentStatus['Self-employed/Entrepreneur']++;
-                } else {
-                    $employmentStatus['Employed']++;
-                }
+                $status = ($data['employment_type'] ?? null) === 'Self-employed' ? 'Self-employed/Entrepreneur' : 'Employed';
             } elseif (($data['looked_for_work'] ?? null) === 'Yes') {
-                $employmentStatus['Unemployed']++;
+                $status = 'Unemployed';
             } elseif (($data['grad_studies'] ?? null) === 'Yes') {
-                $employmentStatus['Pursuing Further Studies']++;
+                $status = 'Pursuing Further Studies';
             } else {
-                $employmentStatus['Not Seeking Employment']++;
+                $status = 'Not Seeking Employment';
             }
+
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $employmentCounts[$program][$status] = ($employmentCounts[$program][$status] ?? 0) + 1;
+        }
+
+        $employmentByProgram = [];
+        foreach ($employmentCounts as $program => $counts) {
+            $employmentByProgram[$program] = array_merge(array_fill_keys($statusLabels, 0), $counts);
         }
 
         // ── Job–Degree Alignment by Program (employed respondents only) ──
@@ -151,8 +149,8 @@ class AdminController extends Controller
             $alignmentCounts[$program][$label] = ($alignmentCounts[$program][$label] ?? 0) + 1;
         }
 
-        $alignmentByProgram = $this->capByRespondentCount($alignmentCounts, $alignmentLabels, 8);
-        foreach ($alignmentByProgram as $program => $counts) {
+        $alignmentByProgram = [];
+        foreach ($alignmentCounts as $program => $counts) {
             $total = array_sum($counts);
             $percentages = [];
             foreach ($alignmentLabels as $label) {
@@ -178,85 +176,40 @@ class AdminController extends Controller
             };
         };
 
-        $incomeCounts = [];
+        $incomeByProgram = [];
         foreach ($byResponse as $data) {
             $program = trim($data['program'] ?? '') ?: 'Unspecified';
-
-            $currentBracket = $bracketFor($data['income_current'] ?? null);
-            if ($currentBracket) {
-                $incomeCounts[$program]['current'][$currentBracket] = ($incomeCounts[$program]['current'][$currentBracket] ?? 0) + 1;
-                $incomeCounts['All Programs']['current'][$currentBracket] = ($incomeCounts['All Programs']['current'][$currentBracket] ?? 0) + 1;
-            }
-
-            $firstBracket = $bracketFor($data['income_first'] ?? null);
-            if ($firstBracket) {
-                $incomeCounts[$program]['first'][$firstBracket] = ($incomeCounts[$program]['first'][$firstBracket] ?? 0) + 1;
-                $incomeCounts['All Programs']['first'][$firstBracket] = ($incomeCounts['All Programs']['first'][$firstBracket] ?? 0) + 1;
+            foreach (['current' => 'income_current', 'first' => 'income_first'] as $kind => $key) {
+                $bracket = $bracketFor($data[$key] ?? null);
+                if ($bracket) {
+                    $incomeByProgram[$program] ??= [
+                        'current' => array_fill(0, count($brackets), 0),
+                        'first' => array_fill(0, count($brackets), 0),
+                    ];
+                    $incomeByProgram[$program][$kind][array_search($bracket, $brackets)]++;
+                }
             }
         }
 
-        $incomeByProgram = ['All Programs' => [
-            'current' => array_map(fn ($b) => $incomeCounts['All Programs']['current'][$b] ?? 0, $brackets),
-            'first' => array_map(fn ($b) => $incomeCounts['All Programs']['first'][$b] ?? 0, $brackets),
-        ]];
-
+        // One shared, searchable program list for the filter, most respondents first.
         $programTotals = [];
-        foreach ($incomeCounts as $program => $data) {
-            if ($program === 'All Programs') {
-                continue;
-            }
-            $programTotals[$program] = array_sum($data['current'] ?? []) + array_sum($data['first'] ?? []);
+        foreach ($byResponse as $data) {
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $programTotals[$program] = ($programTotals[$program] ?? 0) + 1;
         }
         arsort($programTotals);
 
-        foreach (array_slice(array_keys($programTotals), 0, 8) as $program) {
-            $data = $incomeCounts[$program];
-            $incomeByProgram[$program] = [
-                'current' => array_map(fn ($b) => $data['current'][$b] ?? 0, $brackets),
-                'first' => array_map(fn ($b) => $data['first'][$b] ?? 0, $brackets),
-            ];
-        }
-
         return view('admin.analytics', [
-            'employmentStatus' => $employmentStatus,
+            'programs' => array_map(
+                fn ($name, $count) => ['name' => $name, 'count' => $count],
+                array_keys($programTotals),
+                $programTotals,
+            ),
+            'employmentByProgram' => $employmentByProgram,
             'alignmentByProgram' => $alignmentByProgram,
             'incomeByProgram' => $incomeByProgram,
             'incomeBrackets' => $brackets,
         ]);
-    }
-
-    /**
-     * Keep the top N programs by respondent count and fold the rest into "Other",
-     * so a long tail of free-text program names doesn't blow up the chart.
-     */
-    private function capByRespondentCount(array $counts, array $labels, int $limit): array
-    {
-        $totals = [];
-        foreach ($counts as $program => $byLabel) {
-            $totals[$program] = array_sum($byLabel);
-        }
-        arsort($totals);
-
-        $kept = array_slice(array_keys($totals), 0, $limit);
-        $result = [];
-        foreach ($kept as $program) {
-            $result[$program] = $counts[$program];
-        }
-
-        $rest = array_diff(array_keys($counts), $kept);
-        if (!empty($rest)) {
-            $other = array_fill_keys($labels, 0);
-            foreach ($rest as $program) {
-                foreach ($labels as $label) {
-                    $other[$label] += $counts[$program][$label] ?? 0;
-                }
-            }
-            if (array_sum($other) > 0) {
-                $result['Other'] = $other;
-            }
-        }
-
-        return $result;
     }
 
     public function responses()
