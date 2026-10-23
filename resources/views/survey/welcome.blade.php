@@ -48,15 +48,18 @@
     /* ── Navbar ── */
     .navbar {
         background: var(--blue-dd);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 2px 18px rgba(0,0,0,0.25);
+    }
+
+    .navbar-row1 {
         height: 58px;
         padding: 0 2.5rem;
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        box-shadow: 0 2px 18px rgba(0,0,0,0.25);
     }
 
     /* Gold gradient bar — fades out on scroll */
@@ -149,11 +152,17 @@
         color: #fff;
     }
 
+    .navbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-self: end;
+        margin-right: 1.5rem;
+    }
+
     .navbar-login {
         display: inline-flex;
         align-items: center;
-        justify-self: end;
-        margin-right: 1.5rem;
         padding: 0.45rem 1.5rem;
         background: transparent;
         border: 2px solid rgba(255,255,255,0.8);
@@ -163,12 +172,47 @@
         font-weight: 700;
         letter-spacing: 0.03em;
         text-decoration: none;
+        white-space: nowrap;
         transition: background 0.2s;
     }
 
     .navbar-login:hover {
         background: rgba(255,255,255,0.14);
     }
+
+    .navbar-hamburger {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: none;
+        border: none;
+        color: #fff;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .navbar-mobile-menu {
+        display: flex;
+        flex-direction: column;
+        background: var(--blue-d);
+        padding: 0.25rem 1rem 0.75rem;
+        border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .navbar-mobile-menu a {
+        padding: 0.85rem 0.25rem;
+        color: rgba(255,255,255,0.78);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .navbar-mobile-menu a:last-child { border-bottom: none; }
+    .navbar-mobile-menu a.active { color: #fff; }
 
     /* ── Hero ── */
     .hero {
@@ -772,6 +816,8 @@
         color: #fff;
     }
 
+    .footer-minds-link { white-space: nowrap; }
+
     /* ── Modal ── */
     .modal-backdrop {
         position: fixed;
@@ -978,11 +1024,58 @@
         .faq-grid  { grid-template-columns: 1fr; }
     }
 
+    @media (min-width: 721px) {
+        .navbar-mobile-menu { display: none !important; }
+    }
+
     @media (max-width: 720px) {
+        .navbar-row1 {
+            display: flex;
+            flex-wrap: wrap;
+            height: auto;
+            min-height: 54px;
+            padding: 0.6rem 1.1rem;
+            row-gap: 0.3rem;
+        }
+        .navbar-brand { display: contents; }
+        .navbar-seal { order: 1; }
+        .navbar-brand-text {
+            order: 3;
+            flex: 1 0 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-brand-title { font-size: 0.78rem; }
+        .navbar-brand-sub { font-size: 0.62rem; }
         .navbar-links { display: none; }
+        .navbar-actions { order: 2; justify-self: unset; margin-right: 0; margin-left: auto; gap: 0.5rem; }
+        .navbar-login { padding: 0.4rem 0.9rem; font-size: 0.76rem; }
+        .navbar-hamburger { display: inline-flex; }
+
         .hero-inner { grid-template-columns: 1fr; }
         .hero-seal-wrap { display: none; }
         .step-big-number { display: none; }
+
+        .step-preview-wrap { gap: 0; }
+        .step-nav-btn { display: none; }
+        .step-preview-card {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.35rem 1.25rem;
+            gap: 1rem;
+        }
+        .step-preview-content { width: 100%; }
+        .step-title { font-size: 1.15rem; }
+
+        .footer-bar { padding: 1.1rem 1.5rem; }
+        .footer-inner {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            text-align: center;
+            gap: 0.6rem;
+        }
+        .footer-minds-link { white-space: normal; }
+        .footer-tagline { text-align: center; }
     }
 
     [x-cloak] { display: none !important; }
@@ -991,23 +1084,38 @@
 <div x-data="homeApp()" x-cloak>
 
     {{-- ── NAVBAR ── --}}
-    <nav class="navbar" :class="scrolled ? 'scrolled' : ''">
-        <a href="/" class="navbar-brand">
-            <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU Seal" class="navbar-seal" onerror="this.style.display='none'">
-            <span>
-                <span class="navbar-brand-title">Ateneo de Davao University</span>
-                <span class="navbar-brand-sub">Graduate Tracer Study</span>
-            </span>
-        </a>
+    <nav class="navbar" :class="scrolled ? 'scrolled' : ''" @click.outside="mobileMenuOpen = false">
+        <div class="navbar-row1">
+            <a href="/" class="navbar-brand">
+                <img src="{{ asset('images/ADDU-SEAL-Colored.png') }}" alt="ADDU Seal" class="navbar-seal" onerror="this.style.display='none'">
+                <span class="navbar-brand-text">
+                    <span class="navbar-brand-title">Ateneo de Davao University</span>
+                    <span class="navbar-brand-sub">Graduate Tracer Study</span>
+                </span>
+            </a>
 
-        <ul class="navbar-links">
-            <li><a href="#about" :class="activeSection === 'about' ? 'active' : ''">About</a></li>
-            <li><a href="#time" :class="activeSection === 'time' ? 'active' : ''">Time</a></li>
-            <li><a href="#what-to-expect" :class="activeSection === 'expect' ? 'active' : ''">What to Expect</a></li>
-            <li><a href="#faqs" :class="activeSection === 'faqs' ? 'active' : ''">FAQs</a></li>
-        </ul>
+            <ul class="navbar-links">
+                <li><a href="#about" :class="activeSection === 'about' ? 'active' : ''">About</a></li>
+                <li><a href="#time" :class="activeSection === 'time' ? 'active' : ''">Time</a></li>
+                <li><a href="#what-to-expect" :class="activeSection === 'expect' ? 'active' : ''">What to Expect</a></li>
+                <li><a href="#faqs" :class="activeSection === 'faqs' ? 'active' : ''">FAQs</a></li>
+            </ul>
 
-        <a href="{{ url('/admin') }}" class="navbar-login">Log In</a>
+            <div class="navbar-actions">
+                <button type="button" class="navbar-hamburger" @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen ? 'true' : 'false'" aria-label="Toggle navigation menu">
+                    <svg x-show="!mobileMenuOpen" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg x-show="mobileMenuOpen" x-cloak width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <a href="{{ url('/admin') }}" class="navbar-login">Log In</a>
+            </div>
+        </div>
+
+        <div class="navbar-mobile-menu" x-show="mobileMenuOpen" x-cloak x-transition>
+            <a href="#about" @click="mobileMenuOpen = false" :class="activeSection === 'about' ? 'active' : ''">About</a>
+            <a href="#time" @click="mobileMenuOpen = false" :class="activeSection === 'time' ? 'active' : ''">Time</a>
+            <a href="#what-to-expect" @click="mobileMenuOpen = false" :class="activeSection === 'expect' ? 'active' : ''">What to Expect</a>
+            <a href="#faqs" @click="mobileMenuOpen = false" :class="activeSection === 'faqs' ? 'active' : ''">FAQs</a>
+        </div>
     </nav>
 
     {{-- ── HERO ── --}}
@@ -1184,7 +1292,7 @@
     <footer class="footer-bar">
         <div class="footer-inner">
             <span class="footer-brand-title">Ateneo Graduate Tracer Study</span>
-            <a href="/developers" style="text-decoration:none;font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);transition:color 0.15s;white-space:nowrap;text-align:center;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">The Minds Behind the Innovation</a>
+            <a href="/developers" class="footer-minds-link" style="text-decoration:none;font-family:'Cinzel',serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);transition:color 0.15s;text-align:center;" onmouseover="this.style.color='#c9a227'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">The Minds Behind the Innovation</a>
             <span class="footer-tagline">Strong in Faith That Does Justice</span>
         </div>
     </footer>
@@ -1251,6 +1359,7 @@ function homeApp() {
         activeStep: 0,
         activeSection: 'about',
         scrolled: false,
+        mobileMenuOpen: false,
 
         steps: [
             {

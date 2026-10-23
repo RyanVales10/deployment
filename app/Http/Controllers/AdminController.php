@@ -63,6 +63,155 @@ class AdminController extends Controller
         return $categories;
     }
 
+    public function analytics()
+    {
+        $questionTexts = [
+            'worked_past_week' => 'Did you work or have a business/job during the past week?',
+            'has_job_on_leave' => 'Although you did not work, do you have a job/business?',
+            'looked_for_work' => 'Did you look for work or try to establish a business during the past week?',
+            'employment_type' => 'Type of employment',
+            'grad_studies' => 'Have you pursued graduate studies (Masters/Doctorate)?',
+            'education_required' => 'Was your education required for this job?',
+            'program' => 'What baccalaureate program/degree did you complete?',
+            'income_current' => 'Monthly income (PHP)',
+            'income_first' => 'Monthly income at first job (PHP)',
+        ];
+
+        $questionIds = Question::whereIn('text', array_values($questionTexts))
+            ->get()
+            ->pluck('id', 'text');
+
+        $idToKey = [];
+        foreach ($questionTexts as $key => $text) {
+            if ($questionIds->has($text)) {
+                $idToKey[$questionIds[$text]] = $key;
+            }
+        }
+
+        $byResponse = [];
+        if (!empty($idToKey)) {
+            ResponseAnswer::whereIn('question_id', array_keys($idToKey))
+                ->get(['response_id', 'question_id', 'value'])
+                ->each(function ($ra) use (&$byResponse, $idToKey) {
+                    $byResponse[$ra->response_id][$idToKey[$ra->question_id]] = $ra->value;
+                });
+        }
+
+        // ── Employment Status Overview (by program) ──
+        $statusLabels = ['Employed', 'Self-employed/Entrepreneur', 'Unemployed', 'Pursuing Further Studies', 'Not Seeking Employment'];
+        $employmentCounts = [];
+        $employedResponseIds = [];
+
+        foreach ($byResponse as $responseId => $data) {
+            if (!array_key_exists('worked_past_week', $data)) {
+                continue;
+            }
+
+            $hasJob = ($data['worked_past_week'] === 'Yes') || (($data['has_job_on_leave'] ?? null) === 'Yes');
+
+            if ($hasJob) {
+                $employedResponseIds[$responseId] = true;
+                $status = ($data['employment_type'] ?? null) === 'Self-employed' ? 'Self-employed/Entrepreneur' : 'Employed';
+            } elseif (($data['looked_for_work'] ?? null) === 'Yes') {
+                $status = 'Unemployed';
+            } elseif (($data['grad_studies'] ?? null) === 'Yes') {
+                $status = 'Pursuing Further Studies';
+            } else {
+                $status = 'Not Seeking Employment';
+            }
+
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $employmentCounts[$program][$status] = ($employmentCounts[$program][$status] ?? 0) + 1;
+        }
+
+        $employmentByProgram = [];
+        foreach ($employmentCounts as $program => $counts) {
+            $employmentByProgram[$program] = array_merge(array_fill_keys($statusLabels, 0), $counts);
+        }
+
+        // ── Job–Degree Alignment by Program (employed respondents only) ──
+        $alignmentLabels = ['Aligned', 'Partially Aligned', 'Not Aligned'];
+        $alignmentCounts = [];
+
+        foreach (array_keys($employedResponseIds) as $responseId) {
+            $data = $byResponse[$responseId];
+            $label = match ($data['education_required'] ?? null) {
+                'Yes' => 'Aligned',
+                'Not required but preferred' => 'Partially Aligned',
+                'No' => 'Not Aligned',
+                default => null,
+            };
+            if ($label === null) {
+                continue;
+            }
+
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $alignmentCounts[$program][$label] = ($alignmentCounts[$program][$label] ?? 0) + 1;
+        }
+
+        $alignmentByProgram = [];
+        foreach ($alignmentCounts as $program => $counts) {
+            $total = array_sum($counts);
+            $percentages = [];
+            foreach ($alignmentLabels as $label) {
+                $percentages[$label] = $total > 0 ? round((($counts[$label] ?? 0) / $total) * 100, 1) : 0;
+            }
+            $percentages['total'] = $total;
+            $alignmentByProgram[$program] = $percentages;
+        }
+
+        // ── Monthly Income Distribution (initial vs current, by program) ──
+        $brackets = ['<10k', '10k–19k', '20k–29k', '30k–49k', '50k+'];
+        $bracketFor = function ($amount) {
+            if ($amount === null || $amount === '') {
+                return null;
+            }
+            $amount = (float) $amount;
+            return match (true) {
+                $amount < 10000 => '<10k',
+                $amount < 20000 => '10k–19k',
+                $amount < 30000 => '20k–29k',
+                $amount < 50000 => '30k–49k',
+                default => '50k+',
+            };
+        };
+
+        $incomeByProgram = [];
+        foreach ($byResponse as $data) {
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            foreach (['current' => 'income_current', 'first' => 'income_first'] as $kind => $key) {
+                $bracket = $bracketFor($data[$key] ?? null);
+                if ($bracket) {
+                    $incomeByProgram[$program] ??= [
+                        'current' => array_fill(0, count($brackets), 0),
+                        'first' => array_fill(0, count($brackets), 0),
+                    ];
+                    $incomeByProgram[$program][$kind][array_search($bracket, $brackets)]++;
+                }
+            }
+        }
+
+        // One shared, searchable program list for the filter, most respondents first.
+        $programTotals = [];
+        foreach ($byResponse as $data) {
+            $program = trim($data['program'] ?? '') ?: 'Unspecified';
+            $programTotals[$program] = ($programTotals[$program] ?? 0) + 1;
+        }
+        arsort($programTotals);
+
+        return view('admin.analytics', [
+            'programs' => array_map(
+                fn ($name, $count) => ['name' => $name, 'count' => $count],
+                array_keys($programTotals),
+                $programTotals,
+            ),
+            'employmentByProgram' => $employmentByProgram,
+            'alignmentByProgram' => $alignmentByProgram,
+            'incomeByProgram' => $incomeByProgram,
+            'incomeBrackets' => $brackets,
+        ]);
+    }
+
     public function responses()
     {
         $responses = Response::orderBy('submitted_at', 'desc')->get();
